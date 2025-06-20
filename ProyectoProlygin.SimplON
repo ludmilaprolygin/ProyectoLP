@@ -134,7 +134,7 @@ procesarLoteB
     SetLibre Libre+1            @Lugar retorno % Como procesarLoteA devuelve algo, hago el huequito
     SetD Libre, PC+6            @PTR
     SetD Libre+1, Actual        @ED
-    SetD Libre+2, D[Actual+2]   @This
+    SetD Libre+2, D[Actual+2]   @this
     SetActual Libre
     SetLibre Actual+5           % Seteo Libre segun el tamanio del RA de procesarLoteA
     Jump procesarLoteA 
@@ -174,7 +174,7 @@ manejarPedido2B
     SetLibre Libre+1            @Lugar retorno % Como manejarPedido1B devuelve algo, hago el huequito
     SetD Libre, PC+6            @PTR
     SetD Libre+1, Actual        @ED
-    SetD Libre+2, D[Actual+2]   @This
+    SetD Libre+2, D[Actual+2]   @this
     SetActual Libre
     SetLibre Actual+5           % Seteo Libre segun el tamanio del RA de procesarLoteA
     Jump D[H[D[Actual+2]]+4]    % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
@@ -193,7 +193,7 @@ obtenerInformacionB
         SetLibre Libre+1            @Lugar retorno % Como obtenerInformacionA devuelve algo, hago el huequito
         SetD Libre, PC+6            @PTR   
         SetD Libre+1, Actual        @ED
-        SetD Libre+2, D[Actual+2]   @This
+        SetD Libre+2, D[Actual+2]   @this
         SetActual Libre
         SetLibre Actual+4           % Seteo Libre segun el tamanio del RA de obtenerInformacionA
         Jump obtenerInformacionA
@@ -204,13 +204,84 @@ obtenerValorUnitarioB
     SetLibre Libre+1            @Lugar retorno % Como obtenerValorUnitarioA devuelve algo, hago el huequito
     SetD Libre, PC+6            @PTR   
     SetD Libre+1, Actual        @ED
-    SetD Libre+2, D[Actual+2]   @This
+    SetD Libre+2, D[Actual+2]   @this
     SetActual Libre
     SetLibre Actual+3           % Seteo Libre segun el tamanio del RA de obtenerValorUnitarioA
     Jump obtenerValorUnitarioA
     SetD Actual-1, D[Libre-1] + (H[D[Actual+2]+5] * 2)
     Jump llamador
+
     % Traduccion de la clase C
         % Constructor de la clase C
+constructorC
+    Jump constructorB
+    SetH PO+7, D[Actual+2]
+    Jump inicializarProductoPrincipalC
+    Jump llamador
 
         % Metodos de la clase C
+inicializarProductoPrincipalC
+    SetD Actual+2, PO
+    SetH PO, VTB
+    SetD Libre, PC+5
+    SetD Libre+1, Actual
+    SetActual Libre
+    SetLibre Actual+2           % Seteo Libre segun el tamanio del RA de constructorB
+    Jump constructorB
+    SetPO PO+6
+    Jump llamador
+
+cumplirOrdenComplejaC
+    SetD Actual+4, D[Actual+3]
+    SetD Actual+5, 0
+    SetD Actual+6, 0
+    inicioBucleCumplirOrdenComplejaC
+        SetLibre Libre+1                  @Lugar retorno % Como menejarPedido devuelve algo, hago el huequito
+        SetD Libre, PC+7                  @PTR
+        SetD Libre+1, Actual              @ED
+        SetD Libre+2, H[D[Actual+2]+6]    @this = productoPrincipal
+        SetD Libre+3, D[Actual+4]/2       @cantidadSolicitada = itemsFaltantes/2
+        SetActual Libre
+        SetLibre Actual+5                 % Seteo Libre segun el tamanio del RA de manejarPedido1B
+        Jump D[H[D[Actual+2]]+4]          % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
+        SetD Actual+7, D[Libre-1]         @procesadoAhora = productoPrincipal.manejarPedido(itemsFaltantes/2);
+        JumpT procesadoAhoraMenosUno, D[Actual+7] == -1
+        JumpT procesadoAhoraPositivo, D[Actual+7] > 0
+        Jump finBucleCumplirOrdenComplejaC
+    
+        procesadoAhoraMenosUno
+            SetLibre Libre+1                  @Lugar retorno % Como menejarPedido devuelve algo, hago el huequito
+            SetD Libre, PC+7                  @PTR
+            SetD Libre+1, Actual              @ED
+            SetD Libre+2, H[D[Actual+2]+6]    @this = productoPrincipal
+            SetD Libre+3, D[Actual+4]         @cantidadSolicitada = itemsFaltantes
+            SetActual Libre
+            SetLibre Actual+5                 % Seteo Libre segun el tamanio del RA de manejarPedido1B
+            Jump D[H[D[Actual+2]]+4]          % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
+            SetD Actual+7, D[Libre-1]         @procesadoAhora = productoPrincipal.manejarPedido(itemsFaltantes);
+            SetD Actual+5, D[Actual+5]+1      @vecesProcesados++
+            JumpT inicioBucleCumplirOrdenComplejaC, D[Actual+4] > 0 & D[Actual+5] < 5 % Si itemsFaltantes > 0 y vecesProcesado < 5
+            Jump finBucleCumplirOrdenComplejaC
+        procesadoAhoraPositivo
+            SetD Actual+6, D[Actual+6] + D[Actual+7]  @costoTotal = costoTotal + procesadoAhora
+            SetLibre Libre+1                  @Lugar retorno % Como menejarPedido devuelve algo, hago el huequito
+            SetD Libre, PC+6                  @PTR
+            SetD Libre+1, Actual              @ED
+            SetD Libre+2, H[D[Actual+2]+6]    @this = productoPrincipal
+            SetActual Libre
+            SetLibre Actual+5                 % Seteo Libre segun el tamanio del RA de manejarPedido1B
+            Jump D[H[D[Actual+2]]+2]          % Salto al codigo de obtenerValorUnitario segun la VT del objeto receptor
+            SetD Actual+4, D[Actual+4] - (D[Actual+7] / D[Libre-1]) @itemsFaltantes -= (procesadoAhora / valorUnitario)
+            SetD Actual+5, D[Actual+5]+1      @vecesProcesados++
+            JumpT inicioBucleCumplirOrdenComplejaC, D[Actual+4] > 0 & D[Actual+5] < 5 % Si itemsFaltantes > 0 y vecesProcesado < 5
+            Jump finBucleCumplirOrdenComplejaC
+    
+    finBucleCumplirOrdenComplejaC
+        JumpT PC+3, D[Actual+4]>0
+        SetD Actual-1, D[Actual+6] * (-1)
+        Jump llamador
+        SetD Actual-1, D[Actual+6]
+        Jump llamador
+
+    % Traduccion de la clase Principal
+        % Metodo main
