@@ -1,20 +1,20 @@
 % Class Records
 % CR de la clase A
     % CR de totalItemsCreados
-    SetLabel CRA_totalItems, Libre
+    SetLabel CRAtotalItems, Libre
     SetD Libre, 0                                 @totalItemsCreados=0
     SetLibre Libre+1
     SetActual Libre
 
     %CR de limiteProcesamiento
-    SetLabel CRA_limiteProcesamiento, Libre
+    SetLabel CRAlimiteProcesamiento, Libre
     SetD Libre, 100                               @limiteProcesamiento=100
     SetLibre Libre+1
     SetActual Libre
 
 % Virtual Tables
     % VT de la clase A
-    SetLabel VT_A, Libre
+    SetLabel VTA, Libre
     SetD Libre, procesarLoteA                     @VT_A: direccion procesarLote() - A           
     SetD Libre+1, obtenerInformacionA             @VT_A: direccion obtenerInformacion(int tipoInfo) - A
     SetD Libre+2, obtenerValorUnitarioA           @VT_A: direccion obtenerValorUnitario() - A
@@ -23,19 +23,19 @@
     SetActual Libre
 
     % VT de la clase B
-    SetLabel VT_B, Libre
+    SetLabel VTB, Libre
     SetD Libre, procesarLoteB                     @VT_B: direccion procesarLote() - B
     SetD Libre+1, obtenerInformacionB             @VT_B: direccion obtenerInformacion(int tipoInfo) - B
     SetD Libre+2, obtenerValorUnitarioB           @VT_B: direccion obtenerValorUnitario() - B
     SetD Libre+3, verificarStockA                 @VT_B: direccion verificarStock() - A
     SetD Libre+4, manejarPedido1B                 @VT_B: direccion manejarPedido(int cantidadSolicitada) - B
     SetD Libre+5, manejarPedido2B                 @VT_B: direccion manejarPedido(int cantidadSolicitada, int prioridad) - B
-    SetD Libre+6, VT_A                            @VT_B: direccion de VT_A
+    SetD Libre+6, VTA                             @VT_B: direccion de VT_A
     SetLibre Libre+7
     SetActual Libre 
 
     % VT de la clase C
-    SetLabel VT_C, Libre
+    SetLabel VTC, Libre
     SetD Libre, procesarLoteB                     @VT_C: direccion procesarLote() - B
     SetD Libre+1, obtenerInformacionB             @VT_C: direccion obtenerInformacion(int tipoInfo) - B
     SetD Libre+2, obtenerValorUnitarioB           @VT_C: direccion obtenerValorUnitario() - B
@@ -44,7 +44,7 @@
     SetD Libre+5, manejarPedido2B                 @VT_C: direccion manejarPedido(int cantidadSolicitada, int prioridad) - B
     SetD Libre+5, inicializarProductoPrincipalC   @VT_C: direccion inicializarProductoPrincipal() - C
     SetD Libre+6, cumplirOrdenComplejaC           @VT_C: direccion cumplirOrdenCompleja(int cantidadNecesaria) - C
-    SetD Libre+7, VT_B                            @VT_C: direccion de VT_B
+    SetD Libre+7, VTB                             @VT_C: direccion de VT_B
     SetLibre Libre+8
     SetActual Libre
 
@@ -60,8 +60,8 @@
     % Traduccion de la clase A
         % Constructor de la clase A
 constructorA 
-    SetD CRA_totalItems, D[CRA_totalItems]+1
-    SetH PO+1, D[CRA_totalItems]*100
+    SetD CRAtotalItems, D[CRAtotalItems]+1
+    SetH PO+1, D[CRAtotalItems]*100
     SetH PO+2, 50
     SetH PO+3, 10
     SetLibre Actual
@@ -82,7 +82,7 @@ procesarLoteA
     SetD Actual+5, D[Libre-1]   @Retorno de verificarStock % Guardo en Actual+5 porque hay esta la variable stock. Ademas, saco de Libre-1 porque hay verificarStock me guardo el resultado
     JumpT PC+5, !((D[Actual+4] < H[D[Actual+2]+2]) & (D[Actual+5] >= 0)) % Condicion de salida del bucle
         SetD Actual+3, D[Actual+3] + (D[Actual+4] - (D[Actual + 4] / 5)) + 1
-        JumpT PC+3, !(D[Actual+3] > CRA_limiteProcesamiento)) % Si se supera el limite de procesamiento, salto
+        JumpT PC+3, !(D[Actual+3] > CRAlimiteProcesamiento) % Si se supera el limite de procesamiento, salto
         SetD Actual+4, D[Actual+4] + 1
         Jump PC-4 % Salto al chequeo de la condicion de salida del bucle
     SetH D[Actual+2]+2, H[D[Actual+2]+2] - (D[Actual+3] / 2)
@@ -119,22 +119,3 @@ verificarStockA
     SetLibre Actual
     SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
     Jump D[Libre]
-
-%%% PREGUNTAR SI PUEDO HACER ESTO (analogo para el resto de los metodos y clases):
-% Me ayudaria a disminuir la posibilidad de meter la pata con el offset del PC y la cantidad de codigo repetido. pero no se si es correcto
-
-% volver SetLibre Actual
-%        SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
-%        Jump D[Libre]
-
-% obtenerValorUnitarioA  SetD Actual-1, H[D[Actual+2]+3]   @Retorno de obtenerValorUnitarioA % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
-%                        Jump volver
-
-% verificarStockA JumpT PC+3, ((H[D[Actual+2]+2] > 20) & (H[D[Actual+2]+3] > 5))
-%                 JumpT PC+4, ((H[D[Actual+2]+2] <= 20) | (H[D[Actual+2]+2] > 0))
-%                 SetD Actual-1, -1  @Retorno de verificarStockA para caso default % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
-%                 Jump volver
-%                 SetD Actual-1, 1   @Retorno de verificarStockA para cantidadDisponible > 20 && valorUnitario > 5 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
-%                 Jump volver
-%                 SetD Actual-1, 0   @Retorno de verificarStockA para cantidadDisponible <= 20 || cantidadDisponible > 0 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
-%                 Jump volver
