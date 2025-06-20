@@ -137,40 +137,79 @@ procesarLoteB
     SetD Libre+2, D[Actual+2]   @This
     SetActual Libre
     SetLibre Actual+5           % Seteo Libre segun el tamanio del RA de procesarLoteA
-    Jump D[D[H[D[Actual+2]]+6]] % Salto al codigo de procesarLote segun la VT del objeto receptor    
+    Jump procesarLoteA 
     SetD Actual+3, D[Libre-1]   @resultadoBase = super.procesarLote()
     SetD Actual+4, 0            @ajuste = 0
     Jump switchProcesarLoteB
-
     switchProcesarLoteB
         JumpT case1ProcesarLoteB, H[D[Actual+2]+5] == 1
         JumpT case2ProcesarLoteB, H[D[Actual+2]+5] == 2
         SetD Actual+4, D[Actual+3]           @ajuste = resultadoBase
-        Jump retornoSwitchProcesarLoteB
-
+        Jump finSwitchProcesarLoteB
         case1ProcesarLoteB
             SetD Actual+4, (D[Actual+3] / 2) @ajuste = resultadoBase / 2
-            Jump retornoSwitchProcesarLoteB
+            Jump finSwitchProcesarLoteB
         case2ProcesarLoteB
             SetD Actual+4, (D[Actual+3] * 2) @ajuste = resultadoBase * 2
-            Jump retornoSwitchProcesarLoteB
-
-retornoSwitchProcesarLoteB
-    SetH D[Actual+2]+2, H[D[Actual+2]+2] - (D[Actual+4] / 5) @cantidadDisponible = cantidadDisponible - (ajuste / 5);
-    SetD Actual-1, D[Actual+3] + D[Actual+4] @Retorno de procesarLoteB % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
-    Jump llamador
+            Jump finSwitchProcesarLoteB
+    finSwitchProcesarLoteB
+        SetH D[Actual+2]+2, H[D[Actual+2]+2] - (D[Actual+4] / 5) @cantidadDisponible = cantidadDisponible - (ajuste / 5);
+        SetD Actual-1, D[Actual+3] + D[Actual+4] @Retorno de procesarLoteB % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+        Jump llamador
 
 manejarPedido1B
-
+    JumpT cantSolicitadaNegativa, D[Actual+3] <= 0
+    JumpT cantDisponibleSuficiente, D[Actual+3] <= H[D[Actual+2]+2]
+    SetD Actual-1, -1
+    Jump llamador
+    cantSolicitadaNegativa
+        SetD Actual-1, 0
+        Jump llamador
+    cantDisponibleSuficiente
+        SetH D[Actual+2]+2, H[D[Actual+2]+2] - D[Actual+3] @cantidadDisponible = cantidadDisponible - cantidadSolicitada
+        SetD Actual-1, D[Actual+3] * H[D[Actual+2]+3]      @Retorno de manejarPedido1B % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+        Jump llamador
 
 manejarPedido2B
-
+    SetLibre Libre+1            @Lugar retorno % Como manejarPedido1B devuelve algo, hago el huequito
+    SetD Libre, PC+6            @PTR
+    SetD Libre+1, Actual        @ED
+    SetD Libre+2, D[Actual+2]   @This
+    SetActual Libre
+    SetLibre Actual+5           % Seteo Libre segun el tamanio del RA de procesarLoteA
+    Jump D[H[D[Actual+2]]+4]    % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
+    SetD Actual+5, D[Libre-1]   @costo = this.manejarPedido(cantidadSolicitada);
+    JumpT PC+3, D[Actual+5] > 0 & D[Actual+4] > 5
+    SetD Actual-1, D[Actual+5]                      % else
+    Jump llamador
+    SetD Actual-1, D[Actual+5] + (D[Actual+5] / 10) % if
+    Jump llamador
 
 obtenerInformacionB
-
+    JumpT tipoInfo1, D[Actual+3] == 1
+    SetD Actual-1, (H[D[Actual+2]+5] * H[D[Actual+2]+3]) + D[Actual+3] @tipoProducto * valorUnitario + tipoInfo
+    Jump llamador
+    tipoInfo1
+        SetLibre Libre+1            @Lugar retorno % Como obtenerInformacionA devuelve algo, hago el huequito
+        SetD Libre, PC+6            @PTR   
+        SetD Libre+1, Actual        @ED
+        SetD Libre+2, D[Actual+2]   @This
+        SetActual Libre
+        SetLibre Actual+4           % Seteo Libre segun el tamanio del RA de obtenerInformacionA
+        Jump obtenerInformacionA
+        SetD Actual-1, D[Libre-1] + H[D[Actual+2]+4] 
+        Jump llamador
 
 obtenerValorUnitarioB
-
+    SetLibre Libre+1            @Lugar retorno % Como obtenerValorUnitarioA devuelve algo, hago el huequito
+    SetD Libre, PC+6            @PTR   
+    SetD Libre+1, Actual        @ED
+    SetD Libre+2, D[Actual+2]   @This
+    SetActual Libre
+    SetLibre Actual+3           % Seteo Libre segun el tamanio del RA de obtenerValorUnitarioA
+    Jump obtenerValorUnitarioA
+    SetD Actual-1, D[Libre-1] + (H[D[Actual+2]+5] * 2)
+    Jump llamador
     % Traduccion de la clase C
         % Constructor de la clase C
 
