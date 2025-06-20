@@ -64,7 +64,7 @@ llamador
 
 % Traduccion de auxiliares de uso general
 mod
-    SetD Actual-1, D[Actual+2] - (D[Actual+2] / D[Actual+3])
+    SetD Actual-1, D[Actual+2] - ((D[Actual+2] / D[Actual+3]) * D[Actual+3])  
     Jump llamador
 
 % Traduccion de las clases
@@ -90,7 +90,7 @@ procesarLoteA
     Jump D[H[D[Actual+2]]+3]    % Salto al codigo de verificarStock segun la VT del objeto receptor              
     SetD Actual+5, D[Libre-1]   @Retorno de verificarStock % Guardo en Actual+5 porque hay esta la variable stock. Ademas, saco de Libre-1 porque hay verificarStock me guardo el resultado
     JumpT PC+5, !((D[Actual+4] < H[D[Actual+2]+2]) & (D[Actual+5] >= 0)) % Condicion de salida del bucle
-        SetD Actual+3, D[Actual+3] + (D[Actual+4] - (D[Actual + 4] / 5)) + 1
+        SetD Actual+3, D[Actual+3] + (D[Actual+4] - ((D[Actual + 4] / 5) * 5)) + 1
         JumpT PC+3, !(D[Actual+3] > CRAlimiteProcesamiento) % Si se supera el limite de procesamiento, salto
         SetD Actual+4, D[Actual+4] + 1
         Jump PC-4 % Salto al chequeo de la condicion de salida del bucle
@@ -126,7 +126,7 @@ verificarStockA
 constructorB
     Jump constructorA
     SetH PO+4, 1000 + H[PO+1]  
-    SetH PO+5, (H[PO+2] - (H[PO+2] / 2)) + 1
+    SetH PO+5, (H[PO+2] - (H[PO+2] / 2) * 2) + 1
     Jump llamador
 
         % Metodos de la clase B
@@ -285,3 +285,45 @@ cumplirOrdenComplejaC
 
     % Traduccion de la clase Principal
         % Metodo main
+main
+    SetIn Actual               @solicitudInicial = Sistema.read(); 
+    SetIn Actual+2             @prioridadOrden = Sistema.read();
+    SetD Actual+3, PO          @gestorPrincipal
+    SetH PO, VTC
+    SetD Libre, PC+6           @PTR
+    SetD Libre+1, Actual       @ED
+    SetD Libre+2, 100          @ordenId
+    SetActual Libre
+    SetLibre Actual+3          % Seteo Libre segun el tamanio del RA de constructorC
+    Jump constructorB
+    SetPO PO+8                 % Actualizo P0 segun el tamanio del INST de C
+    print1
+        SetLibre Libre+1           @Lugar retorno % Como obtenerInformacion devuelve algo, hago el huequito
+        SetD Libre, PC+7           @PTR
+        SetD Libre+1, Actual       @ED
+        SetD Libre+2, D[Actual+3]  @this
+        SetD Libre+3, D[Actual+2]  @tipoInfo
+        SetActual Libre
+        SetLibre Actual+4          % Seteo Libre segun el tamanio del RA de obtenerInformacionB
+        Jump D[H[D[Actual+3]]+1]   % Salto al codigo de obtenerInformacion segun la VT del objeto receptor
+        SetOut D[Libre-1]          @Salida de obtenerInformacion
+    print2
+        SetLibre Libre+1           @Lugar retorno % Como procesarLote devuelve algo, hago el huequito
+        SetD Libre, PC+6           @PTR
+        SetD Libre+1, Actual       @ED
+        SetD Libre+2, D[Actual+3]  @this
+        SetActual Libre
+        SetLibre Actual+5          % Seteo Libre segun el tamanio del RA de procesarLote
+        Jump D[H[D[Actual+3]]]     % Salto al codigo de procesarLote segun la VT del objeto receptor
+        SetOut D[Libre-1]          @Salida de procesarLote
+    print3
+        SetLibre Libre+1           @Lugar retorno % Como cumplirOrdenCompleja devuelve algo, hago el huequito
+        SetD Libre, PC+7           @PTR
+        SetD Libre+1, Actual       @ED
+        SetD Libre+2, D[Actual+3]  @this
+        SetD Libre+3,  D[Actual] * D[Actual] * D[Actual+1]   @tipoInfo
+        SetActual Libre
+        SetLibre Actual+8          % Seteo Libre segun el tamanio del RA de cumplirOrdenCompleja
+        Jump D[H[D[Actual+6]]]     % Salto al codigo de cumplirOrdenCompleja segun la VT del objeto receptor
+        SetOut D[Libre-1]          @Salida de cumplirOrdenCompleja
+    Halt
