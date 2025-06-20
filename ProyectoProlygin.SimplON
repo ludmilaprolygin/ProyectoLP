@@ -1,0 +1,51 @@
+% Class Record de la clase A
+% CR de totalItemsCreados
+SetLabel CRA_totalItems, Libre
+SetD Libre, 0                                 @totalItemsCreados=0
+SetLibre Libre+1
+SetActual Libre
+
+%CR de limiteProcesamiento
+SetLabel CRA_limiteProcesamiento, Libre
+SetD Libre, 100                               @limiteProcesamiento=100
+SetLibre Libre+1
+SetActual Libre
+
+% Virtual Tables
+% VT de la clase A
+SetLabel VT_A, Libre
+SetD Libre, procesarLoteA                     @VT_A: direccion procesarLote() - A           
+SetD Libre+1, obtenerInformacionA             @VT_A: direccion obtenerInformacion(int tipoInfo) - A
+SetD Libre+2, obtenerValorUnitarioA           @VT_A: direccion obtenerValorUnitario() - A
+SetD Libre+3, verificarStockA                 @VT_A: direccion verificarStock() - A
+SetLibre Libre+4                              
+SetActual Libre
+
+% VT de la clase B
+SetLabel VT_B, Libre
+SetD Libre, procesarLoteB                     @VT_B: direccion procesarLote() - B
+SetD Libre+1, obtenerInformacionB             @VT_B: direccion obtenerInformacion(int tipoInfo) - B
+SetD Libre+2, obtenerValorUnitarioB           @VT_B: direccion obtenerValorUnitario() - B
+SetD Libre+3, verificarStockA                 @VT_B: direccion verificarStock() - A
+SetD Libre+4, manejarPedido1B                 @VT_B: direccion manejarPedido(int cantidadSolicitada) - B
+SetD Libre+5, manejarPedido2B                 @VT_B: direccion manejarPedido(int cantidadSolicitada, int prioridad) - B
+SetD Libre+6, VT_A                            @VT_B: direccion de VT_A
+SetLibre Libre+7
+SetActual Libre 
+
+% VT de la clase C
+SetLabel VT_C, Libre
+SetD Libre, procesarLoteB                     @VT_C: direccion procesarLote() - B
+SetD Libre+1, obtenerInformacionB             @VT_C: direccion obtenerInformacion(int tipoInfo) - B
+SetD Libre+2, obtenerValorUnitarioB           @VT_C: direccion obtenerValorUnitario() - B
+SetD Libre+3, verificarStockA                 @VT_C: direccion verificarStock() - A
+SetD Libre+4, manejarPedido1B                 @VT_C: direccion manejarPedido(int cantidadSolicitada) - B
+SetD Libre+5, manejarPedido2B                 @VT_C: direccion manejarPedido(int cantidadSolicitada, int prioridad) - B
+SetD Libre+5, inicializarProductoPrincipalC   @VT_C: direccion inicializarProductoPrincipal() - C
+SetD Libre+6, cumplirOrdenComplejaC           @VT_C: direccion cumplirOrdenCompleja(int cantidadNecesaria) - C
+SetD Libre+7, VT_B                            @VT_C: direccion de VT_B
+SetLibre Libre+8
+SetActual Libre
+
+% Traduccion de la clase A
+%
