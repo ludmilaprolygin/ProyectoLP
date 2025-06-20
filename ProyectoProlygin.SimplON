@@ -65,9 +65,7 @@ llamador
 % Traduccion de auxiliares de uso general
 mod
     SetD Actual-1, D[Actual+2] - (D[Actual+2] / D[Actual+3])
-    SetLibre Actual
-    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
-    Jump D[Libre] 
+    Jump llamador
 
 % Traduccion de las clases
     % Traduccion de la clase A
@@ -77,9 +75,7 @@ constructorA
     SetH PO+1, D[CRAtotalItems]*100
     SetH PO+2, 50
     SetH PO+3, 10
-    SetLibre Actual
-    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
-    Jump D[Libre]
+    Jump llamador
 
         % Metodos de la clase A
 procesarLoteA 
@@ -102,24 +98,18 @@ procesarLoteA
     JumpT PC+2, !(H[D[Actual+2]+2] < 0)
     SetH D[Actual+2]+2, 0
     SetD Actual-1, D[Actual+3]  @Retorno de procesarLoteA % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
-    SetLibre Actual
-    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
-    Jump D[Libre]
+    Jump llamador
 
 obtenerInformacionA 
     JumpT PC+2, D[Actual+3] == 1
     SetD Actual-1, (H[D[Actual+2]+3] * H[D[Actual+2]+2]) + Actual+3   @Retorno de obtenerInformacionA para tipoInfo != 1 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
     Jump PC+1
     SetD Actual-1, H[D[Actual+2]+1]                                   @Retorno de obtenerInformacionA para tipoInfo == 1 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
-    SetLibre Actual
-    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
-    Jump D[Libre]
+    Jump llamador
 
 obtenerValorUnitarioA 
     SetD Actual-1, H[D[Actual+2]+3]                                   @Retorno de obtenerValorUnitarioA % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
-    SetLibre Actual
-    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
-    Jump D[Libre]
+    Jump llamador
 
 verificarStockA 
     JumpT PC+4, ((H[D[Actual+2]+2] > 20) & (H[D[Actual+2]+3] > 5))
@@ -129,9 +119,7 @@ verificarStockA
     SetD Actual-1, 1   @Retorno de verificarStockA para cantidadDisponible > 20 && valorUnitario > 5 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
     Jump PC+2
     SetD Actual-1, 0   @Retorno de verificarStockA para cantidadDisponible <= 20 || cantidadDisponible > 0 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
-    SetLibre Actual
-    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
-    Jump D[Libre]
+    Jump llamador
 
     % Traduccion de la clase B
         % Constructor de la clase B
@@ -139,22 +127,38 @@ constructorB
     Jump constructorA
     SetH PO+4, 1000 + H[PO+1]  
     SetH PO+5, (H[PO+2] - (H[PO+2] / 2)) + 1
-    SetLibre Actual
-    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
-    Jump D[Libre]
+    Jump llamador
 
         % Metodos de la clase B
 procesarLoteB
     SetLibre Libre+1            @Lugar retorno % Como procesarLoteA devuelve algo, hago el huequito
-    SetD Libre, PC+             @PTR
+    SetD Libre, PC+6            @PTR
     SetD Libre+1, Actual        @ED
     SetD Libre+2, D[Actual+2]   @This
     SetActual Libre
     SetLibre Actual+5           % Seteo Libre segun el tamanio del RA de procesarLoteA
     Jump D[D[H[D[Actual+2]]+6]] % Salto al codigo de procesarLote segun la VT del objeto receptor    
-    SetD Actual+3, D[Libre-1]   @Retorno de super.procesarLote()
-    SetD Actual+4, 0
-    
+    SetD Actual+3, D[Libre-1]   @resultadoBase = super.procesarLote()
+    SetD Actual+4, 0            @ajuste = 0
+    Jump switchProcesarLoteB
+
+    switchProcesarLoteB
+        JumpT case1ProcesarLoteB, H[D[Actual+2]+5] == 1
+        JumpT case2ProcesarLoteB, H[D[Actual+2]+5] == 2
+        SetD Actual+4, D[Actual+3]           @ajuste = resultadoBase
+        Jump retornoSwitchProcesarLoteB
+
+        case1ProcesarLoteB
+            SetD Actual+4, (D[Actual+3] / 2) @ajuste = resultadoBase / 2
+            Jump retornoSwitchProcesarLoteB
+        case2ProcesarLoteB
+            SetD Actual+4, (D[Actual+3] * 2) @ajuste = resultadoBase * 2
+            Jump retornoSwitchProcesarLoteB
+
+retornoSwitchProcesarLoteB
+    SetH D[Actual+2]+2, H[D[Actual+2]+2] - (D[Actual+4] / 5) @cantidadDisponible = cantidadDisponible - (ajuste / 5);
+    SetD Actual-1, D[Actual+3] + D[Actual+4] @Retorno de procesarLoteB % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+    Jump llamador
 
 manejarPedido1B
 
