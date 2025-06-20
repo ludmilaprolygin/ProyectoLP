@@ -56,6 +56,19 @@
     Jump main
     Halt
 
+% Traduccion generica para volver al llamador
+llamador
+    SetLibre Actual
+    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
+    Jump D[Libre]  
+
+% Traduccion de auxiliares de uso general
+mod
+    SetD Actual-1, D[Actual+2] - (D[Actual+2] / D[Actual+3])
+    SetLibre Actual
+    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
+    Jump D[Libre] 
+
 % Traduccion de las clases
     % Traduccion de la clase A
         % Constructor de la clase A
@@ -119,3 +132,42 @@ verificarStockA
     SetLibre Actual
     SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
     Jump D[Libre]
+
+    % Traduccion de la clase B
+        % Constructor de la clase B
+constructorB
+    Jump constructorA
+    SetH PO+4, 1000 + H[PO+1]  
+    SetH PO+5, (H[PO+2] - (H[PO+2] / 2)) + 1
+    SetLibre Actual
+    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
+    Jump D[Libre]
+
+        % Metodos de la clase B
+procesarLoteB
+    SetLibre Libre+1            @Lugar retorno % Como procesarLoteA devuelve algo, hago el huequito
+    SetD Libre, PC+             @PTR
+    SetD Libre+1, Actual        @ED
+    SetD Libre+2, D[Actual+2]   @This
+    SetActual Libre
+    SetLibre Actual+5           % Seteo Libre segun el tamanio del RA de procesarLoteA
+    Jump D[D[H[D[Actual+2]]+6]] % Salto al codigo de procesarLote segun la VT del objeto receptor    
+    SetD Actual+3, D[Libre-1]   @Retorno de super.procesarLote()
+    SetD Actual+4, 0
+    
+
+manejarPedido1B
+
+
+manejarPedido2B
+
+
+obtenerInformacionB
+
+
+obtenerValorUnitarioB
+
+    % Traduccion de la clase C
+        % Constructor de la clase C
+
+        % Metodos de la clase C
