@@ -1,5 +1,5 @@
 % Class Records
-    % CR de la clase A
+% CR de la clase A
     % CR de totalItemsCreados
     SetLabel CRA_totalItems, Libre
     SetD Libre, 0                                 @totalItemsCreados=0
@@ -52,30 +52,89 @@
     SetD Libre, PC+5                              
     SetD Libre+1, Actual                          
     SetActual Libre
-    SetLibre Actual+3                             @Offet del RA de main % No tiene puntero de retorno ni enlace dinamico, es un tipo especial
+    SetLibre Actual+3                             % Seteo Libre segun el tamanio del RA de main. No tiene puntero de retorno ni enlace dinamico, es un tipo especial
     Jump main
     Halt
 
 % Traduccion de las clases
     % Traduccion de la clase A
         % Constructor de la clase A
-constructorA SetD CRA_totalItems, D[CRA_totalItems]+1
-             SetH D[Actual-1]+1, D[CRA_totalItems]*100
-             SetH D[Actual-1]+2, 50
-             SetH D[Actual-1]+3, 10
-             SetLibre Actual
-             SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
-             Jump D[Libre]
+constructorA 
+    SetD CRA_totalItems, D[CRA_totalItems]+1
+    SetH PO+1, D[CRA_totalItems]*100
+    SetH PO+2, 50
+    SetH PO+3, 10
+    SetLibre Actual
+    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
+    Jump D[Libre]
 
         % Metodos de la clase A
 procesarLoteA 
+    SetD Actual+3, 0
+    SetD Actual+4, 0
+    SetLibre Libre+1            @Lugar retorno % Como verificarStock devuelve algo, hago el huequito
+    SetD Libre, PC+6            @PTR
+    SetD Libre+1, Actual        @ED
+    SetD Libre+2, D[Actual+2]   @This
+    SetActual Libre
+    SetLibre Actual+3           % Seteo Libre segun el tamanio del RA de verificarStock
+    Jump D[H[D[Actual+2]]+3]    % Salto al codigo de verificarStock segun la VT del objeto receptor              
+    SetD Actual+5, D[Libre-1]   @Retorno de verificarStock % Guardo en Actual+5 porque hay esta la variable stock. Ademas, saco de Libre-1 porque hay verificarStock me guardo el resultado
+    JumpT PC+5, !((D[Actual+4] < H[D[Actual+2]+2]) & (D[Actual+5] >= 0)) % Condicion de salida del bucle
+        SetD Actual+3, D[Actual+3] + (D[Actual+4] - (D[Actual + 4] / 5)) + 1
+        JumpT PC+3, !(D[Actual+3] > CRA_limiteProcesamiento)) % Si se supera el limite de procesamiento, salto
+        SetD Actual+4, D[Actual+4] + 1
+        Jump PC-4 % Salto al chequeo de la condicion de salida del bucle
+    SetH D[Actual+2]+2, H[D[Actual+2]+2] - (D[Actual+3] / 2)
+    JumpT PC+2, !(H[D[Actual+2]+2] < 0)
+    SetH D[Actual+2]+2, 0
+    SetD Actual-1, D[Actual+3]  @Retorno de procesarLoteA % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+    SetLibre Actual
+    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
+    Jump D[Libre]
 
-obtenerInformacionA JumpT PC+2, !(Actual+2 == 1)
-                    
+obtenerInformacionA 
+    JumpT PC+2, D[Actual+3] == 1
+    SetD Actual-1, (H[D[Actual+2]+3] * H[D[Actual+2]+2]) + Actual+3   @Retorno de obtenerInformacionA para tipoInfo != 1 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+    Jump PC+1
+    SetD Actual-1, H[D[Actual+2]+1]                                   @Retorno de obtenerInformacionA para tipoInfo == 1 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+    SetLibre Actual
+    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
+    Jump D[Libre]
 
-obtenerValorUnitarioA  SetD Actual-1, H[D[Actual+2]+3]   @Retorno de obtenerValorUnitarioA % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
-                       SetLibre Actual
-                       SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
-                       Jump D[Libre]
+obtenerValorUnitarioA 
+    SetD Actual-1, H[D[Actual+2]+3]                                   @Retorno de obtenerValorUnitarioA % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+    SetLibre Actual
+    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
+    Jump D[Libre]
 
-verificarStockA
+verificarStockA 
+    JumpT PC+4, ((H[D[Actual+2]+2] > 20) & (H[D[Actual+2]+3] > 5))
+    JumpT PC+5, ((H[D[Actual+2]+2] <= 20) | (H[D[Actual+2]+2] > 0))
+    SetD Actual-1, -1  @Retorno de verificarStockA para caso default % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+    Jump PC+4
+    SetD Actual-1, 1   @Retorno de verificarStockA para cantidadDisponible > 20 && valorUnitario > 5 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+    Jump PC+2
+    SetD Actual-1, 0   @Retorno de verificarStockA para cantidadDisponible <= 20 || cantidadDisponible > 0 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+    SetLibre Actual
+    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
+    Jump D[Libre]
+
+%%% PREGUNTAR SI PUEDO HACER ESTO (analogo para el resto de los metodos y clases):
+% Me ayudaria a disminuir la posibilidad de meter la pata con el offset del PC y la cantidad de codigo repetido. pero no se si es correcto
+
+% volver SetLibre Actual
+%        SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
+%        Jump D[Libre]
+
+% obtenerValorUnitarioA  SetD Actual-1, H[D[Actual+2]+3]   @Retorno de obtenerValorUnitarioA % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+%                        Jump volver
+
+% verificarStockA JumpT PC+3, ((H[D[Actual+2]+2] > 20) & (H[D[Actual+2]+3] > 5))
+%                 JumpT PC+4, ((H[D[Actual+2]+2] <= 20) | (H[D[Actual+2]+2] > 0))
+%                 SetD Actual-1, -1  @Retorno de verificarStockA para caso default % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+%                 Jump volver
+%                 SetD Actual-1, 1   @Retorno de verificarStockA para cantidadDisponible > 20 && valorUnitario > 5 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+%                 Jump volver
+%                 SetD Actual-1, 0   @Retorno de verificarStockA para cantidadDisponible <= 20 || cantidadDisponible > 0 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+%                 Jump volver
