@@ -1,7 +1,4 @@
-# Preguntas sobre código SimplON
-
-## [X] Pregunta 1
-
+#### [X] Pregunta 1
 Me ayudaría a disminuir la posibilidad de meter la pata con el offset del PC y la cantidad de código repetido. Pero no sé si es correcto.
 
 ```simplon
@@ -26,12 +23,12 @@ verificarStockA
     Jump llamador
 ```
 
-## [ ] Pregunta 2
+#### [ ] Pregunta 2
 Vale la pena agregar una etiqueta para resolver mod?
 Considerando el siguiente pseudocodigo:
 ```
 public int mod (int numerador, int denominador){
-    return numerador - (numerador / denominador);
+    return numerador - ((numerador / denominador) * denominador);
 }
 ```
 Generaria un RA con:
@@ -79,3 +76,34 @@ SetActual Libre
 SetLibre Actual+4
 Jump mod
 ```
+
+#### [ ] Pregunta 3
+Sobre los CRs... El valor se asigna cuando se ejecuta, pero no hay una instruccion de codigo que haga la asignacion fuera de la declaracion. 
+El esquema es sin valor, pero en el codigo si le pongo el valor correspondiente?
+```simplon
+% CR de totalItemsCreados
+    SetLabel CRAtotalItems, Libre
+    SetD Libre, 0                                 @totalItemsCreados=0
+    SetLibre Libre+1
+    SetActual Libre
+```
+
+#### [ ] Pregunta 4
+main es un caso especial en el que no tiene PTR ni ED; puede no ir. Entonces en memoria D, D[Actual] no tiene PTR sino el primer parametro/variable de main. Al terminar main, no podria volver al llamador, pongo Halt al final?
+--> No lo hice asi, le puse PTR y ED. Pero si no lo hiciera, como lo resuelvo? Omito llamada main?
+
+#### [ ] Pregunta 5
+Cuando conviene usar etiquetas, y cuando conviene usar PC+offset?
+
+#### [ ] Pregunta 6
+General de estructura de la traduccion. Hay alguna convencion para adoptar sobre orden de codigo y etiquetas?
+
+#### [ ] Pregunta 7
+Sobre el opcional 1... "_Controlar la referencias nulas antes de enviar un mensaje a un objeto_".
+Ver LP8
+
+#### [ ] Pregunta 8
+Hice todos los & y | sin contemplar si funcionaban como && o ||. El enunciado pide ejemplificar con verificarStock de la clase A.
+Con cortocircuito puede "traer problemas" porque puede haber efectos colaterales (false && i++ ; true || i++). En el codigo provisto en java no pasa, por lo que si no se hiciera el control entero, _no hay problema_.
+- Como funcionan los & y | en simplOn? Sin cortocircuito?
+- Como hago el abordaje de la evaluacion respecto de verificarStock contemplando lo anterior?

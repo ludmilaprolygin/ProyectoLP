@@ -1,0 +1,90 @@
+% Virtual Table de la clase A 
+SetLabel VTA, Libre
+SetD Libre, m1         @VTA: direccion m1()
+SetLibre Libre+1
+SetActual Libre
+
+% Virtual Table de la clase B 
+SetLabel VTB, Libre
+SetD Libre, m2         @VTB: direccion m2()
+SetLibre Libre+1
+SetActual Libre
+
+% Invocacion a main
+    SetD Libre, PC+5                              
+    SetD Libre+1, Actual                          
+    SetActual Libre
+    SetLibre Actual+3     % Seteo Libre segun el tamanio del RA de main
+    Jump main
+    Halt
+
+% Traduccion generica para volver al llamador
+llamador
+    SetLibre Actual
+    SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
+    Jump D[Libre]
+
+% Traduccion de las clases
+    % Traduccion de la clase A
+        % Constructor de la clase A
+constructorA
+    SetH PO+1, D[Actual+2] + 50                   @v1=x+50
+    Jump llamador
+
+m1
+    SetD Actual-1, H[D[Actual+2]+1]+1            @return v1 de A
+    Jump llamador
+
+    % Traduccion de la clase B
+        % Constructor de la clase B
+constructorB
+    SetH PO+1, 100                                @v1=100
+    Jump llamador
+
+m2
+    Jump o1
+    o1
+        SetD Actual+3, PO                         @o1
+        SetH PO, VTA
+        SetD libre, PC+6                          @PTR
+        SetD Libre+1, Actual                      @ED
+        SetD Libre+2, H[D[Actual+2]+1]            @x 
+        SetActual Libre
+        SetLibre Actual+3   % Seteo Libre segun el tamanio del RA de constructorA
+        Jump constructorA
+        SetPO PO+2
+    SetD Actual-1, D[Actual+3]                    @return o1 
+    Jump llamador
+
+    % Traduccion de la clase Principal
+        % Metodo main
+main
+    Jump obj
+    obj
+        SetD Actual+2, PO                         @obj
+        SetH PO, VTB
+        SetD libre, PC+5                          @PTR
+        SetD Libre+1, Actual                      @ED
+        SetActual Libre
+        SetLibre Actual+2   % Seteo Libre segun el tamanio del RA de constructorB
+        Jump constructorB
+        SetPO PO+2
+    Jump llamadoM2
+    llamadoM2
+        SetLibre Libre+1                          @Lugar de retorno m2
+        SetD Libre, PC+6                          @PTR
+        SetD Libre+1, Actual                      @ED
+        SetD Libre+2, D[Actual+2]                 @this
+        SetActual Libre
+        SetLibre Actual+4   % Seteo Libre segun el tamanio del RA de m2
+        Jump m2
+    llamadoM1
+        SetLibre Libre+1                          @Lugar de retorno m1
+        SetD Libre, PC+6                          @PTR
+        SetD Libre+1, Actual                      @ED
+        SetD Libre+2, D[Libre-2]                  @this
+        SetActual Libre
+        SetLibre Actual+3   % Seteo Libre segun el tamanio del RA de m1
+        Jump m1
+    SetOut D[Libre-1]       % Impresion del resultado de obj.m2().m1()
+    Jump llamador
