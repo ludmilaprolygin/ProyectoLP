@@ -71,10 +71,12 @@ mod
     % Traduccion de la clase A
         % Constructor de la clase A
 constructorA 
-    SetD CRAtotalItems, D[CRAtotalItems]+1
-    SetH PO+1, D[CRAtotalItems]*100
-    SetH PO+2, 50
-    SetH PO+3, 10
+    SetH PO, VTA
+    SetD CRAtotalItems, D[CRAtotalItems]+1  @totalItemsCreados++
+    SetH PO+1, D[CRAtotalItems]*100         @id = totalItemsCreados * 100
+    SetH PO+2, 50                           @cantidadDisponible = 50
+    SetH PO+3, 10                           @valorUnitario = 10
+    SetPO PO+4                              @Corro PO segun atributos declarados en la clase A + la VT
     Jump llamador
 
         % Metodos de la clase A
@@ -132,8 +134,11 @@ constructorB
     SetActual Libre
     SetLibre Actual+2          % Seteo Libre segun el tamanio del RA de constructorA
     Jump constructorA
-    SetH PO+4, 1000 + H[PO+1]  
-    SetH PO+5, (H[PO+2] - ((H[PO+2] / 2) * 2)) + 1
+    SetPO PO-4                 @Corro PO segun atributos de clase B + la VT
+    SetH PO, VTB
+    SetH PO+4, 1000 + H[PO+1]  @ubicacionAlmacen = 1000 + itemId
+    SetH PO+5, (H[PO+2] - ((H[PO+2] / 2) * 2)) + 1   @tipoProducto = (itemId mod 2) + 1
+    SetPO PO+6                 @Corro PO segun INST_B
     Jump llamador
 
         % Metodos de la clase B
@@ -226,10 +231,13 @@ constructorC
     SetActual Libre
     SetLibre Actual+2          % Seteo Libre segun el tamanio del RA de constructorB
     Jump constructorB
-    SetH PO+7, D[Actual+2]
+    SetPO PO-6                 @Corro PO segun atributos de clase C + la VT
+    SetH PO, VTC
+    SetH PO+7, D[Actual+2]     @numeroOrden = ordenId
     SetD Libre, PC+6           @PTR
     SetD Libre+1, Actual       @ED
     SetD Libre+2, PO           @this = gestorPrincipal
+    SetPO PO+7                 @Corro PO segun INST_C
     SetActual Libre
     SetLibre Actual+3  
     Jump inicializarProductoPrincipalC
@@ -237,16 +245,12 @@ constructorC
 
         % Metodos de la clase C
 inicializarProductoPrincipalC
-    SetH PO+6, PO+8
-    SetPO PO+8
     SetD Actual+2, PO
-    SetH PO, VTB
     SetD Libre, PC+5
     SetD Libre+1, Actual
     SetActual Libre
     SetLibre Actual+2           % Seteo Libre segun el tamanio del RA de constructorB
     Jump constructorB
-    SetPO PO+6
     Jump llamador
 
 cumplirOrdenComplejaC
@@ -307,7 +311,6 @@ main
     SetIn Actual+2             @solicitudInicial = Sistema.read(); 
     SetIn Actual+3             @prioridadOrden = Sistema.read();
     SetD Actual+4, PO          @gestorPrincipal
-    SetH PO, VTC
     SetD Libre, PC+6           @PTR
     SetD Libre+1, Actual       @ED
     SetD Libre+2, 100          @ordenId

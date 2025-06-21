@@ -107,3 +107,6 @@ Hice todos los & y | sin contemplar si funcionaban como && o ||. El enunciado pi
 Con cortocircuito puede "traer problemas" porque puede haber efectos colaterales (false && i++ ; true || i++). En el codigo provisto en java no pasa, por lo que si no se hiciera el control entero, _no hay problema_.
 - Como funcionan los & y | en simplOn? Sin cortocircuito?
 - Como hago el abordaje de la evaluacion respecto de verificarStock contemplando lo anterior?
+
+#### [ ] Pregunta 9
+Quien deberia responsabilizarse de la gestion de memoria en H? El constructor o el llamador del constructor? Me genero dudas la diapo.
