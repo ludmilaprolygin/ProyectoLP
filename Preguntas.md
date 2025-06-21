@@ -1,6 +1,6 @@
 # Preguntas sobre código SimplON
 
-## [ ] Pregunta 1
+## [X] Pregunta 1
 
 Me ayudaría a disminuir la posibilidad de meter la pata con el offset del PC y la cantidad de código repetido. Pero no sé si es correcto.
 
