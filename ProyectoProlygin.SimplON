@@ -42,10 +42,10 @@
     SetD Libre+3, verificarStockA                 @VT_C: direccion verificarStock() - A
     SetD Libre+4, manejarPedido1B                 @VT_C: direccion manejarPedido(int cantidadSolicitada) - B
     SetD Libre+5, manejarPedido2B                 @VT_C: direccion manejarPedido(int cantidadSolicitada, int prioridad) - B
-    SetD Libre+5, inicializarProductoPrincipalC   @VT_C: direccion inicializarProductoPrincipal() - C
-    SetD Libre+6, cumplirOrdenComplejaC           @VT_C: direccion cumplirOrdenCompleja(int cantidadNecesaria) - C
-    SetD Libre+7, VTB                             @VT_C: direccion de VT_B
-    SetLibre Libre+8
+    SetD Libre+6, inicializarProductoPrincipalC   @VT_C: direccion inicializarProductoPrincipal() - C
+    SetD Libre+7, cumplirOrdenComplejaC           @VT_C: direccion cumplirOrdenCompleja(int cantidadNecesaria) - C
+    SetD Libre+8, VTB                             @VT_C: direccion de VT_B
+    SetLibre Libre+9
     SetActual Libre
 
 % Invocacion a main
@@ -92,10 +92,9 @@ procesarLoteA
     Jump D[H[D[Actual+2]]+3]    % Salto al codigo de verificarStock segun la VT del objeto receptor              
     SetD Actual+5, D[Libre-1]   @Retorno de verificarStock % Guardo en Actual+5 porque hay esta la variable stock. Ademas, saco de Libre-1 porque hay verificarStock me guardo el resultado
     condicionBucleProcesarLoteA
-        JumpT finBucleProcesarLoteA, !((D[Actual+4] < H[D[Actual+2]+2]) & (D[Actual+5] >= 0)) @!(i < cantidadDisponible & stock >= 0) % Condicion de salida del bucle
-    inicioBucleProcesarLoteA
+        JumpT finBucleProcesarLoteA, ((D[Actual+4] < H[D[Actual+2]+2]) & (D[Actual+5] >= 0))==0 @!(i < cantidadDisponible & stock >= 0) % Condicion de salida del bucle
         SetD Actual+3, D[Actual+3] + (D[Actual+4] - ((D[Actual + 4] / 5) * 5)) + 1 @itemsProcesados += (i mod 5) + 1
-        JumpT PC+3, !(D[Actual+3] > CRAlimiteProcesamiento) % Si se supera el limite de procesamiento, salto
+        JumpT finBucleProcesarLoteA, D[Actual+3] > D[CRAlimiteProcesamiento] % Si se supera el limite de procesamiento, salto
         SetD Actual+4, D[Actual+4] + 1 @i = i+1
         Jump condicionBucleProcesarLoteA % Salto al chequeo de la condicion de salida del bucle
     finBucleProcesarLoteA
@@ -159,7 +158,7 @@ procesarLoteB
     SetD Libre+1, Actual        @ED
     SetD Libre+2, D[Actual+2]   @this
     SetActual Libre
-    SetLibre Actual+5           % Seteo Libre segun el tamanio del RA de procesarLoteA
+    SetLibre Actual+6           % Seteo Libre segun el tamanio del RA de procesarLoteA
     Jump procesarLoteA          % super.procesarLote()
     SetD Actual+3, D[Libre-1]   @resultadoBase = super.procesarLote()
     SetD Actual+4, 0            @ajuste = 0
@@ -297,7 +296,7 @@ cumplirOrdenComplejaC
             Jump D[H[D[Actual+2]]+4]          % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
             SetD Actual+7, D[Libre-1]         @procesadoAhora = productoPrincipal.manejarPedido(itemsFaltantes);
             SetD Actual+5, D[Actual+5]+1      @vecesProcesados++
-            JumpT inicioBucleCumplirOrdenComplejaC, D[Actual+4] > 0 & D[Actual+5] < 5 % Si itemsFaltantes > 0 y vecesProcesado < 5
+            JumpT inicioBucleCumplirOrdenComplejaC, D[Actual+5] > 0 & D[Actual+6] < 5 % Si itemsFaltantes > 0 y vecesProcesado < 5
             Jump finBucleCumplirOrdenComplejaC
         procesadoAhoraPositivo
             SetD Actual+6, D[Actual+6] + D[Actual+7]  @costoTotal = costoTotal + procesadoAhora
@@ -310,7 +309,7 @@ cumplirOrdenComplejaC
             Jump D[H[D[Actual+2]]+2]          % Salto al codigo de obtenerValorUnitario segun la VT del objeto receptor
             SetD Actual+4, D[Actual+4] - (D[Actual+7] / D[Libre-1]) @itemsFaltantes -= (procesadoAhora / valorUnitario)
             SetD Actual+5, D[Actual+5]+1      @vecesProcesados++
-            JumpT inicioBucleCumplirOrdenComplejaC, D[Actual+4] > 0 & D[Actual+5] < 5 % Si itemsFaltantes > 0 y vecesProcesado < 5
+            JumpT inicioBucleCumplirOrdenComplejaC, D[Actual+5] > 0 & D[Actual+6] < 5 % Si itemsFaltantes > 0 y vecesProcesado < 5
             Jump finBucleCumplirOrdenComplejaC
     
     finBucleCumplirOrdenComplejaC
