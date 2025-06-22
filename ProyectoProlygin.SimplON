@@ -71,7 +71,7 @@ mod
     % Traduccion de la clase A
         % Constructor de la clase A
 constructorA 
-    SetH PO, VTA
+    SetH PO, VTA                            @VTA
     SetD CRAtotalItems, D[CRAtotalItems]+1  @totalItemsCreados++
     SetH PO+1, D[CRAtotalItems]*100         @id = totalItemsCreados * 100
     SetH PO+2, 50                           @cantidadDisponible = 50
@@ -233,10 +233,10 @@ constructorC
     SetPO PO-6                 @Corro PO segun atributos de clase C + la VT
     SetH PO, VTC               @VTC
     SetH PO+7, D[Actual+2]     @numeroOrden = ordenId
-    SetD Libre, PC+6           @PTR
+    SetD Libre, PC+7           @PTR
     SetD Libre+1, Actual       @ED
     SetD Libre+2, PO           @this = gestorPrincipal
-    SetPO PO+7                 @Corro PO segun INST_C
+    SetPO PO+8                 @Corro PO segun INST_C
     SetActual Libre
     SetLibre Actual+3  
     Jump inicializarProductoPrincipalC
