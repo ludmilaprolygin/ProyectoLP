@@ -49,7 +49,7 @@
     SetActual Libre
 
 % Invocacion a main
-    SetD Libre, PC+5                              
+    SetD Libre, PC+5                              @RA main  
     SetD Libre+1, Actual                          
     SetActual Libre
     SetLibre Actual+5                             % Seteo Libre segun el tamanio del RA de main. No tiene puntero de retorno ni enlace dinamico, es un tipo especial
@@ -84,7 +84,7 @@ procesarLoteA
     SetD Actual+3, 0            @itemsProcesados=0
     SetD Actual+4, 0            @i=0
     SetLibre Libre+1            @Lugar retorno % Como verificarStock devuelve algo, hago el huequito
-    SetD Libre, PC+6            @PTR
+    SetD Libre, PC+6            @PTR de verificarStock
     SetD Libre+1, Actual        @ED
     SetD Libre+2, D[Actual+2]   @This
     SetActual Libre
@@ -117,19 +117,30 @@ obtenerValorUnitarioA
     Jump llamador
 
 verificarStockA 
-    JumpT PC+4, ((H[D[Actual+2]+2] > 20) & (H[D[Actual+2]+3] > 5)) % Si cantidadDisponible > 20 && valorUnitario > 5, salto
-    JumpT PC+5, ((H[D[Actual+2]+2] <= 20) | (H[D[Actual+2]+2] > 0)) % Si cantidadDisponible <= 20 || cantidadDisponible > 0, salto
-    SetD Actual-1, -1  @Retorno de verificarStockA para caso default % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
-    Jump PC+4
-    SetD Actual-1, 1   @Retorno de verificarStockA para cantidadDisponible > 20 && valorUnitario > 5 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
-    Jump PC+2
-    SetD Actual-1, 0   @Retorno de verificarStockA para cantidadDisponible <= 20 || cantidadDisponible > 0 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
-    Jump llamador
+    JumpT andBverificarStockA, H[D[Actual+2]+2] > 20 % Si cantidadDisponible > 20, evaluo valorUnitario > 5
+    Jump elseAndVerificarStockA 
+    andBverificarStockA
+        JumpT thenAndVerificarStockA, H[D[Actual+2]+3] > 5 % Si valorUnitario > 5, ejecuto then (return 1)
+    elseAndVerificarStockA
+        Jump orVerificarStockA
+    thenAndVerificarStockA
+        SetD Actual-1, 1    @Return 1 (then && verificarStockA)
+        Jump llamador
+    
+    orVerificarStockA
+        JumpT thenOrVerificarStockA, H[D[Actual+2]+2] <= 20 % Si cantidadDisponible <= 20, ejecuto then (return 0)
+        JumpT elseOrVerificarStockA, !(H[D[Actual+2]+2] > 0) % Si !(cantidadDisponible > 0), salto al else
+        thenOrVerificarStockA
+            SetD Actual-1, 0 @Return 0 (then || verificarStockA)
+            Jump llamador
+        elseOrVerificarStockA
+            SetD Actual-1, -1 @Return -1 (caso default verificarStockA)
+            Jump llamador
 
     % Traduccion de la clase B
         % Constructor de la clase B
 constructorB
-    SetD Libre, PC+5           @PTR
+    SetD Libre, PC+5           @PTR de constructorA
     SetD Libre+1, Actual       @ED
     SetActual Libre
     SetLibre Actual+2          % Seteo Libre segun el tamanio del RA de constructorA
@@ -144,7 +155,7 @@ constructorB
         % Metodos de la clase B
 procesarLoteB
     SetLibre Libre+1            @Lugar retorno % Como procesarLoteA devuelve algo, hago el huequito
-    SetD Libre, PC+6            @PTR
+    SetD Libre, PC+6            @PTR de procesarLoteA
     SetD Libre+1, Actual        @ED
     SetD Libre+2, D[Actual+2]   @this
     SetActual Libre
@@ -183,7 +194,7 @@ manejarPedido1B
 
 manejarPedido2B
     SetLibre Libre+1            @Lugar retorno % Como manejarPedido1B devuelve algo, hago el huequito
-    SetD Libre, PC+6            @PTR
+    SetD Libre, PC+6            @PTR de manejarPedido1B
     SetD Libre+1, Actual        @ED
     SetD Libre+2, D[Actual+2]   @this
     SetActual Libre
@@ -202,7 +213,7 @@ obtenerInformacionB
     Jump llamador
     tipoInfo1
         SetLibre Libre+1            @Lugar retorno % Como obtenerInformacionA devuelve algo, hago el huequito
-        SetD Libre, PC+6            @PTR   
+        SetD Libre, PC+6            @PTR de obtenerInformacionA
         SetD Libre+1, Actual        @ED
         SetD Libre+2, D[Actual+2]   @this
         SetActual Libre
@@ -213,7 +224,7 @@ obtenerInformacionB
 
 obtenerValorUnitarioB
     SetLibre Libre+1            @Lugar retorno % Como obtenerValorUnitarioA devuelve algo, hago el huequito
-    SetD Libre, PC+6            @PTR   
+    SetD Libre, PC+6            @PTR de obtenerValorUnitarioA
     SetD Libre+1, Actual        @ED
     SetD Libre+2, D[Actual+2]   @this
     SetActual Libre
@@ -225,7 +236,7 @@ obtenerValorUnitarioB
     % Traduccion de la clase C
         % Constructor de la clase C
 constructorC
-    SetD Libre, PC+5           @PTR
+    SetD Libre, PC+5           @PTR de constructorB
     SetD Libre+1, Actual       @ED
     SetActual Libre
     SetLibre Actual+2          % Seteo Libre segun el tamanio del RA de constructorB
@@ -233,7 +244,7 @@ constructorC
     SetPO PO-6                 @Corro PO segun atributos de clase C + la VT
     SetH PO, VTC               @VTC
     SetH PO+7, D[Actual+2]     @numeroOrden = ordenId
-    SetD Libre, PC+7           @PTR
+    SetD Libre, PC+7           @PTR de inicializarProductoPrincipalC
     SetD Libre+1, Actual       @ED
     SetD Libre+2, PO           @this = gestorPrincipal
     SetPO PO+8                 @Corro PO segun INST_C
@@ -245,7 +256,7 @@ constructorC
         % Metodos de la clase C
 inicializarProductoPrincipalC
     SetD Actual+2, PO   @productoPrincipal
-    SetD Libre, PC+5    @PTR
+    SetD Libre, PC+5    @PTR de constructorB
     SetD Libre+1, Actual    @ED
     SetActual Libre
     SetLibre Actual+2           % Seteo Libre segun el tamanio del RA de constructorB
@@ -258,7 +269,7 @@ cumplirOrdenComplejaC
     SetD Actual+6, 0    @costoTotal=0
     inicioBucleCumplirOrdenComplejaC
         SetLibre Libre+1                  @Lugar retorno % Como menejarPedido devuelve algo, hago el huequito
-        SetD Libre, PC+7                  @PTR
+        SetD Libre, PC+7                  @PTR de manejarPedido2B
         SetD Libre+1, Actual              @ED
         SetD Libre+2, H[D[Actual+2]+6]    @this = productoPrincipal
         SetD Libre+3, D[Actual+4]/2       @cantidadSolicitada = itemsFaltantes/2
@@ -272,7 +283,7 @@ cumplirOrdenComplejaC
     
         procesadoAhoraMenosUno
             SetLibre Libre+1                  @Lugar retorno % Como menejarPedido devuelve algo, hago el huequito
-            SetD Libre, PC+7                  @PTR
+            SetD Libre, PC+7                  @PTR de manejarPedido1B
             SetD Libre+1, Actual              @ED
             SetD Libre+2, H[D[Actual+2]+6]    @this = productoPrincipal
             SetD Libre+3, D[Actual+4]         @cantidadSolicitada = itemsFaltantes
@@ -286,11 +297,11 @@ cumplirOrdenComplejaC
         procesadoAhoraPositivo
             SetD Actual+6, D[Actual+6] + D[Actual+7]  @costoTotal = costoTotal + procesadoAhora
             SetLibre Libre+1                  @Lugar retorno % Como menejarPedido devuelve algo, hago el huequito
-            SetD Libre, PC+6                  @PTR
+            SetD Libre, PC+6                  @PTR de obtenerValorUnitario
             SetD Libre+1, Actual              @ED
             SetD Libre+2, H[D[Actual+2]+6]    @this = productoPrincipal
             SetActual Libre
-            SetLibre Actual+5                 % Seteo Libre segun el tamanio del RA de manejarPedido1B
+            SetLibre Actual+5                 % Seteo Libre segun el tamanio del RA de obtenerValorUnitario
             Jump D[H[D[Actual+2]]+2]          % Salto al codigo de obtenerValorUnitario segun la VT del objeto receptor
             SetD Actual+4, D[Actual+4] - (D[Actual+7] / D[Libre-1]) @itemsFaltantes -= (procesadoAhora / valorUnitario)
             SetD Actual+5, D[Actual+5]+1      @vecesProcesados++
@@ -310,7 +321,7 @@ main
     SetIn Actual+2             @solicitudInicial = Sistema.read(); 
     SetIn Actual+3             @prioridadOrden = Sistema.read();
     SetD Actual+4, PO          @gestorPrincipal
-    SetD Libre, PC+6           @PTR
+    SetD Libre, PC+6           @PTR de constructorC
     SetD Libre+1, Actual       @ED
     SetD Libre+2, 100          @ordenId
     SetActual Libre
@@ -318,7 +329,7 @@ main
     Jump constructorC
     print1
         SetLibre Libre+1           @Lugar retorno % Como obtenerInformacion devuelve algo, hago el huequito
-        SetD Libre, PC+7           @PTR
+        SetD Libre, PC+7           @PTR de obtenerInformacion
         SetD Libre+1, Actual       @ED
         SetD Libre+2, D[Actual+4]  @this
         SetD Libre+3, D[Actual+3]  @tipoInfo
@@ -328,7 +339,7 @@ main
         SetOut D[Libre-1]          @Salida de obtenerInformacion
     print2
         SetLibre Libre+1           @Lugar retorno % Como procesarLote devuelve algo, hago el huequito
-        SetD Libre, PC+6           @PTR
+        SetD Libre, PC+6           @PTR de procesarLote
         SetD Libre+1, Actual       @ED
         SetD Libre+2, D[Actual+4]  @this
         SetActual Libre
@@ -337,7 +348,7 @@ main
         SetOut D[Libre-1]          @Salida de procesarLote
     print3
         SetLibre Libre+1           @Lugar retorno % Como cumplirOrdenCompleja devuelve algo, hago el huequito
-        SetD Libre, PC+7           @PTR
+        SetD Libre, PC+7           @PTR de cumplirOrdenCompleja
         SetD Libre+1, Actual       @ED
         SetD Libre+2, D[Actual+4]  @this
         SetD Libre+3,  D[Actual+2] * D[Actual+2] * D[Actual+3]   @tipoInfo
