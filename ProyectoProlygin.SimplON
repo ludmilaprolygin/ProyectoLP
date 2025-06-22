@@ -81,8 +81,8 @@ constructorA
 
         % Metodos de la clase A
 procesarLoteA 
-    SetD Actual+3, 0
-    SetD Actual+4, 0
+    SetD Actual+3, 0            @itemsProcesados=0
+    SetD Actual+4, 0            @i=0
     SetLibre Libre+1            @Lugar retorno % Como verificarStock devuelve algo, hago el huequito
     SetD Libre, PC+6            @PTR
     SetD Libre+1, Actual        @ED
@@ -92,21 +92,21 @@ procesarLoteA
     Jump D[H[D[Actual+2]]+3]    % Salto al codigo de verificarStock segun la VT del objeto receptor              
     SetD Actual+5, D[Libre-1]   @Retorno de verificarStock % Guardo en Actual+5 porque hay esta la variable stock. Ademas, saco de Libre-1 porque hay verificarStock me guardo el resultado
     condicionBucleProcesarLoteA
-        JumpT finBucleProcesarLoteA, !((D[Actual+4] < H[D[Actual+2]+2]) & (D[Actual+5] >= 0)) % Condicion de salida del bucle
+        JumpT finBucleProcesarLoteA, !((D[Actual+4] < H[D[Actual+2]+2]) & (D[Actual+5] >= 0)) @!(i < cantidadDisponible & stock >= 0) % Condicion de salida del bucle
     inicioBucleProcesarLoteA
-        SetD Actual+3, D[Actual+3] + (D[Actual+4] - ((D[Actual + 4] / 5) * 5)) + 1
+        SetD Actual+3, D[Actual+3] + (D[Actual+4] - ((D[Actual + 4] / 5) * 5)) + 1 @itemsProcesados += (i mod 5) + 1
         JumpT PC+3, !(D[Actual+3] > CRAlimiteProcesamiento) % Si se supera el limite de procesamiento, salto
-        SetD Actual+4, D[Actual+4] + 1
+        SetD Actual+4, D[Actual+4] + 1 @i = i+1
         Jump condicionBucleProcesarLoteA % Salto al chequeo de la condicion de salida del bucle
     finBucleProcesarLoteA
-    SetH D[Actual+2]+2, H[D[Actual+2]+2] - (D[Actual+3] / 2)
+    SetH D[Actual+2]+2, H[D[Actual+2]+2] - (D[Actual+3] / 2) @cantidadDisponible = cantidadDisponible - (itemsProcesados / 2)
     JumpT PC+2, !(H[D[Actual+2]+2] < 0)
-    SetH D[Actual+2]+2, 0
+    SetH D[Actual+2]+2, 0 @cantidadDisponible = 0
     SetD Actual-1, D[Actual+3]  @Retorno de procesarLoteA % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
     Jump llamador
 
 obtenerInformacionA 
-    JumpT PC+2, D[Actual+3] == 1
+    JumpT PC+2, D[Actual+3] == 1 % Si tipoInfo==1, salto
     SetD Actual-1, (H[D[Actual+2]+3] * H[D[Actual+2]+2]) + Actual+3   @Retorno de obtenerInformacionA para tipoInfo != 1 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
     Jump PC+1
     SetD Actual-1, H[D[Actual+2]+1]                                   @Retorno de obtenerInformacionA para tipoInfo == 1 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
@@ -117,8 +117,8 @@ obtenerValorUnitarioA
     Jump llamador
 
 verificarStockA 
-    JumpT PC+4, ((H[D[Actual+2]+2] > 20) & (H[D[Actual+2]+3] > 5))
-    JumpT PC+5, ((H[D[Actual+2]+2] <= 20) | (H[D[Actual+2]+2] > 0))
+    JumpT PC+4, ((H[D[Actual+2]+2] > 20) & (H[D[Actual+2]+3] > 5)) % Si cantidadDisponible > 20 && valorUnitario > 5, salto
+    JumpT PC+5, ((H[D[Actual+2]+2] <= 20) | (H[D[Actual+2]+2] > 0)) % Si cantidadDisponible <= 20 || cantidadDisponible > 0, salto
     SetD Actual-1, -1  @Retorno de verificarStockA para caso default % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
     Jump PC+4
     SetD Actual-1, 1   @Retorno de verificarStockA para cantidadDisponible > 20 && valorUnitario > 5 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
@@ -133,9 +133,9 @@ constructorB
     SetD Libre+1, Actual       @ED
     SetActual Libre
     SetLibre Actual+2          % Seteo Libre segun el tamanio del RA de constructorA
-    Jump constructorA
+    Jump constructorA          % super()
     SetPO PO-4                 @Corro PO segun atributos de clase B + la VT
-    SetH PO, VTB
+    SetH PO, VTB               @VTB
     SetH PO+4, 1000 + H[PO+1]  @ubicacionAlmacen = 1000 + itemId
     SetH PO+5, (H[PO+2] - ((H[PO+2] / 2) * 2)) + 1   @tipoProducto = (itemId mod 2) + 1
     SetPO PO+6                 @Corro PO segun INST_B
@@ -149,13 +149,12 @@ procesarLoteB
     SetD Libre+2, D[Actual+2]   @this
     SetActual Libre
     SetLibre Actual+5           % Seteo Libre segun el tamanio del RA de procesarLoteA
-    Jump procesarLoteA 
+    Jump procesarLoteA          % super.procesarLote()
     SetD Actual+3, D[Libre-1]   @resultadoBase = super.procesarLote()
     SetD Actual+4, 0            @ajuste = 0
-    Jump switchProcesarLoteB
     switchProcesarLoteB
-        JumpT case1ProcesarLoteB, H[D[Actual+2]+5] == 1
-        JumpT case2ProcesarLoteB, H[D[Actual+2]+5] == 2
+        JumpT case1ProcesarLoteB, H[D[Actual+2]+5] == 1 % case 1
+        JumpT case2ProcesarLoteB, H[D[Actual+2]+5] == 2 % case 2
         SetD Actual+4, D[Actual+3]           @ajuste = resultadoBase
         Jump finSwitchProcesarLoteB
         case1ProcesarLoteB
@@ -170,16 +169,16 @@ procesarLoteB
         Jump llamador
 
 manejarPedido1B
-    JumpT cantSolicitadaNegativa, D[Actual+3] <= 0
-    JumpT cantDisponibleSuficiente, D[Actual+3] <= H[D[Actual+2]+2]
-    SetD Actual-1, -1
+    JumpT cantSolicitadaNegativa, D[Actual+3] <= 0 % Si cantidadSolicitada <= 0, salto
+    JumpT cantDisponibleSuficiente, D[Actual+3] <= H[D[Actual+2]+2] % Si cantidadSolicitada <= cantidadDisponible, salto
+    SetD Actual-1, -1 @Retorno de caso default
     Jump llamador
     cantSolicitadaNegativa
-        SetD Actual-1, 0
+        SetD Actual-1, 0 @Retorno de caso cantidadSolicitada <= 0
         Jump llamador
     cantDisponibleSuficiente
         SetH D[Actual+2]+2, H[D[Actual+2]+2] - D[Actual+3] @cantidadDisponible = cantidadDisponible - cantidadSolicitada
-        SetD Actual-1, D[Actual+3] * H[D[Actual+2]+3]      @Retorno de manejarPedido1B % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+        SetD Actual-1, D[Actual+3] * H[D[Actual+2]+3]      @Retorno de caso cantidadSolicitada <= cantidadDisponible % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
         Jump llamador
 
 manejarPedido2B
@@ -191,14 +190,14 @@ manejarPedido2B
     SetLibre Actual+5           % Seteo Libre segun el tamanio del RA de procesarLoteA
     Jump D[H[D[Actual+2]]+4]    % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
     SetD Actual+5, D[Libre-1]   @costo = this.manejarPedido(cantidadSolicitada);
-    JumpT PC+3, D[Actual+5] > 0 & D[Actual+4] > 5
-    SetD Actual-1, D[Actual+5]                      % else
+    JumpT PC+3, D[Actual+5] > 0 & D[Actual+4] > 5 % Si costo > 0 && prioridad > 5, salto
+    SetD Actual-1, D[Actual+5]   @Retorno si !(costo > 0 && prioridad > 5)
     Jump llamador
-    SetD Actual-1, D[Actual+5] + (D[Actual+5] / 10) % if
+    SetD Actual-1, D[Actual+5] + (D[Actual+5] / 10) @Retorno si costo > 0 && prioridad > 5
     Jump llamador
 
 obtenerInformacionB
-    JumpT tipoInfo1, D[Actual+3] == 1
+    JumpT tipoInfo1, D[Actual+3] == 1 % super.obtenerInformacion(tipoInfo) si tipoInfo==1
     SetD Actual-1, (H[D[Actual+2]+5] * H[D[Actual+2]+3]) + D[Actual+3] @tipoProducto * valorUnitario + tipoInfo
     Jump llamador
     tipoInfo1
@@ -209,7 +208,7 @@ obtenerInformacionB
         SetActual Libre
         SetLibre Actual+4           % Seteo Libre segun el tamanio del RA de obtenerInformacionA
         Jump obtenerInformacionA
-        SetD Actual-1, D[Libre-1] + H[D[Actual+2]+4] 
+        SetD Actual-1, D[Libre-1] + H[D[Actual+2]+4] @Retorno de super.obtenerInformacion(tipoInfo)
         Jump llamador
 
 obtenerValorUnitarioB
@@ -220,7 +219,7 @@ obtenerValorUnitarioB
     SetActual Libre
     SetLibre Actual+3           % Seteo Libre segun el tamanio del RA de obtenerValorUnitarioA
     Jump obtenerValorUnitarioA
-    SetD Actual-1, D[Libre-1] + (H[D[Actual+2]+5] * 2)
+    SetD Actual-1, D[Libre-1] + (H[D[Actual+2]+5] * 2) @Retorno de obtenerValorUnitario()
     Jump llamador
 
     % Traduccion de la clase C
@@ -232,7 +231,7 @@ constructorC
     SetLibre Actual+2          % Seteo Libre segun el tamanio del RA de constructorB
     Jump constructorB
     SetPO PO-6                 @Corro PO segun atributos de clase C + la VT
-    SetH PO, VTC
+    SetH PO, VTC               @VTC
     SetH PO+7, D[Actual+2]     @numeroOrden = ordenId
     SetD Libre, PC+6           @PTR
     SetD Libre+1, Actual       @ED
@@ -245,18 +244,18 @@ constructorC
 
         % Metodos de la clase C
 inicializarProductoPrincipalC
-    SetD Actual+2, PO
-    SetD Libre, PC+5
-    SetD Libre+1, Actual
+    SetD Actual+2, PO   @productoPrincipal
+    SetD Libre, PC+5    @PTR
+    SetD Libre+1, Actual    @ED
     SetActual Libre
     SetLibre Actual+2           % Seteo Libre segun el tamanio del RA de constructorB
     Jump constructorB
     Jump llamador
 
 cumplirOrdenComplejaC
-    SetD Actual+4, D[Actual+3]
-    SetD Actual+5, 0
-    SetD Actual+6, 0
+    SetD Actual+4, D[Actual+3]  @itemsFaltantes=cantidadNecesaria
+    SetD Actual+5, 0    @vecesProcesado=0
+    SetD Actual+6, 0    @costoTotal=0
     inicioBucleCumplirOrdenComplejaC
         SetLibre Libre+1                  @Lugar retorno % Como menejarPedido devuelve algo, hago el huequito
         SetD Libre, PC+7                  @PTR
@@ -267,8 +266,8 @@ cumplirOrdenComplejaC
         SetLibre Actual+5                 % Seteo Libre segun el tamanio del RA de manejarPedido1B
         Jump D[H[D[Actual+2]]+4]          % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
         SetD Actual+7, D[Libre-1]         @procesadoAhora = productoPrincipal.manejarPedido(itemsFaltantes/2);
-        JumpT procesadoAhoraMenosUno, D[Actual+7] == -1
-        JumpT procesadoAhoraPositivo, D[Actual+7] > 0
+        JumpT procesadoAhoraMenosUno, D[Actual+7] == -1 % Si procesadoAhora==-1, salto
+        JumpT procesadoAhoraPositivo, D[Actual+7] > 0   % Si procesadoAhora>0, salto
         Jump finBucleCumplirOrdenComplejaC
     
         procesadoAhoraMenosUno
@@ -299,10 +298,10 @@ cumplirOrdenComplejaC
             Jump finBucleCumplirOrdenComplejaC
     
     finBucleCumplirOrdenComplejaC
-        JumpT PC+3, D[Actual+4]>0
-        SetD Actual-1, D[Actual+6] * (-1)
+        JumpT PC+3, D[Actual+4]>0 % Si itemsFaltantes > 0, salto
+        SetD Actual-1, D[Actual+6] * (-1) @Retorno -costoTotal
         Jump llamador
-        SetD Actual-1, D[Actual+6]
+        SetD Actual-1, D[Actual+6]  @Retorno costoTotal
         Jump llamador
 
     % Traduccion de la clase Principal
