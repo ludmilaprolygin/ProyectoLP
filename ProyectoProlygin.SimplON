@@ -259,7 +259,8 @@ constructorC
 
         % Metodos de la clase C
 inicializarProductoPrincipalC
-    SetD Actual+2, PO   @productoPrincipal
+    %SetD Actual+2, PO   @productoPrincipal
+    SetH D[Actual+2]+6, PO @productoPrincipal
     SetD Libre, PC+5    @PTR de constructorB
     SetD Libre+1, Actual    @ED
     SetActual Libre
@@ -273,7 +274,7 @@ cumplirOrdenComplejaC
     SetD Actual+6, 0    @costoTotal=0
     inicioBucleCumplirOrdenComplejaC
         SetLibre Libre+1                  @Lugar retorno % Como menejarPedido devuelve algo, hago el huequito
-        SetD Libre, PC+7                  @PTR de manejarPedido2B
+        SetD Libre, PC+7                  @PTR de manejarPedido1B
         SetD Libre+1, Actual              @ED
         SetD Libre+2, H[D[Actual+2]+6]    @this = productoPrincipal
         SetD Libre+3, D[Actual+4]/2       @cantidadSolicitada = itemsFaltantes/2
@@ -281,6 +282,7 @@ cumplirOrdenComplejaC
         SetLibre Actual+5                 % Seteo Libre segun el tamanio del RA de manejarPedido1B
         Jump D[H[D[Actual+2]]+4]          % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
         SetD Actual+7, D[Libre-1]         @procesadoAhora = productoPrincipal.manejarPedido(itemsFaltantes/2);
+        SetLibre Libre-1
         JumpT procesadoAhoraMenosUno, D[Actual+7] == -1 % Si procesadoAhora==-1, salto
         JumpT procesadoAhoraPositivo, D[Actual+7] > 0   % Si procesadoAhora>0, salto
         Jump finBucleCumplirOrdenComplejaC
@@ -294,10 +296,14 @@ cumplirOrdenComplejaC
             SetActual Libre
             SetLibre Actual+5                 % Seteo Libre segun el tamanio del RA de manejarPedido1B
             Jump D[H[D[Actual+2]]+4]          % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
-            SetD Actual+7, D[Libre-1]         @procesadoAhora = productoPrincipal.manejarPedido(itemsFaltantes);
+            SetLibre Libre-1
+            SetD Actual+7, D[Libre]         @procesadoAhora = productoPrincipal.manejarPedido(itemsFaltantes);
+            JumpT procesadoAhoraPositivo, D[Actual+7] > 0   % Si procesadoAhora>0, salto
             SetD Actual+5, D[Actual+5]+1      @vecesProcesados++
-            JumpT inicioBucleCumplirOrdenComplejaC, D[Actual+5] > 0 & D[Actual+6] < 5 % Si itemsFaltantes > 0 y vecesProcesado < 5
-            Jump finBucleCumplirOrdenComplejaC
+            JumpT finBucleCumplirOrdenComplejaC, (D[Actual+4] > 0) == 0 % Si !(itemsFaltantes > 0), salto
+            JumpT finBucleCumplirOrdenComplejaC, (D[Actual+5] < 5) == 0 % Si !(vecesProcesado < 5), salto
+            Jump inicioBucleCumplirOrdenComplejaC % Si itemsFaltantes > 0 y vecesProcesado < 5
+            
         procesadoAhoraPositivo
             SetD Actual+6, D[Actual+6] + D[Actual+7]  @costoTotal = costoTotal + procesadoAhora
             SetLibre Libre+1                  @Lugar retorno % Como menejarPedido devuelve algo, hago el huequito
@@ -307,16 +313,18 @@ cumplirOrdenComplejaC
             SetActual Libre
             SetLibre Actual+5                 % Seteo Libre segun el tamanio del RA de obtenerValorUnitario
             Jump D[H[D[Actual+2]]+2]          % Salto al codigo de obtenerValorUnitario segun la VT del objeto receptor
-            SetD Actual+4, D[Actual+4] - (D[Actual+7] / D[Libre-1]) @itemsFaltantes -= (procesadoAhora / valorUnitario)
+            SetLibre Libre-1
+            SetD Actual+4, D[Actual+4] - (D[Actual+7] / D[Libre]) @itemsFaltantes -= (procesadoAhora / valorUnitario)
             SetD Actual+5, D[Actual+5]+1      @vecesProcesados++
-            JumpT inicioBucleCumplirOrdenComplejaC, D[Actual+5] > 0 & D[Actual+6] < 5 % Si itemsFaltantes > 0 y vecesProcesado < 5
-            Jump finBucleCumplirOrdenComplejaC
+            JumpT finBucleCumplirOrdenComplejaC, (D[Actual+4] > 0) == 0 % Si !(itemsFaltantes > 0), salto
+            JumpT finBucleCumplirOrdenComplejaC, (D[Actual+5] < 5) == 0 % Si !(vecesProcesado < 5), salto
+            Jump inicioBucleCumplirOrdenComplejaC % Si itemsFaltantes > 0 y vecesProcesado < 5
     
     finBucleCumplirOrdenComplejaC
         JumpT PC+3, D[Actual+4]>0 % Si itemsFaltantes > 0, salto
-        SetD Actual-1, D[Actual+6] * (-1) @Retorno -costoTotal
-        Jump llamador
         SetD Actual-1, D[Actual+6]  @Retorno costoTotal
+        Jump llamador
+        SetD Actual-1, D[Actual+6] * (-1) @Retorno -costoTotal
         Jump llamador
 
     % Traduccion de la clase Principal
@@ -358,6 +366,6 @@ main
         SetD Libre+3,  D[Actual+2] * D[Actual+2] * D[Actual+3]   @tipoInfo
         SetActual Libre
         SetLibre Actual+8          % Seteo Libre segun el tamanio del RA de cumplirOrdenCompleja
-        Jump D[H[D[Actual+2]]]     % Salto al codigo de cumplirOrdenCompleja segun la VT del objeto receptor
+        Jump D[H[D[Actual+2]]+7]     % Salto al codigo de cumplirOrdenCompleja segun la VT del objeto receptor
         SetOut D[Libre-1]          @Salida de cumplirOrdenCompleja
     Jump llamador

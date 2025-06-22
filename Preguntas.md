@@ -102,7 +102,7 @@ General de estructura de la traduccion. Hay alguna convencion para adoptar sobre
 Sobre el opcional 1... "_Controlar la referencias nulas antes de enviar un mensaje a un objeto_".
 Ver LP8
 
-#### [ ] Pregunta 8
+#### [X] Pregunta 8
 Hice todos los & y | sin contemplar si funcionaban como && o ||. El enunciado pide ejemplificar con verificarStock de la clase A.
 Con cortocircuito puede "traer problemas" porque puede haber efectos colaterales (false && i++ ; true || i++). En el codigo provisto en java no pasa, por lo que si no se hiciera el control entero, _no hay problema_.
 - Como funcionan los & y | en simplOn? Sin cortocircuito?
@@ -110,3 +110,6 @@ Con cortocircuito puede "traer problemas" porque puede haber efectos colaterales
 
 #### [ ] Pregunta 9
 Quien deberia responsabilizarse de la gestion de memoria en H? El constructor o el llamador del constructor? Me genero dudas la diapo.
+
+#### [ ] Pregunta 10
+Casos de prueba relevantes?
