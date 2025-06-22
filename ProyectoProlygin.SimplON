@@ -201,11 +201,16 @@ manejarPedido2B
     SetLibre Actual+5           % Seteo Libre segun el tamanio del RA de procesarLoteA
     Jump D[H[D[Actual+2]]+4]    % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
     SetD Actual+5, D[Libre-1]   @costo = this.manejarPedido(cantidadSolicitada);
-    JumpT PC+3, D[Actual+5] > 0 & D[Actual+4] > 5 % Si costo > 0 && prioridad > 5, salto
-    SetD Actual-1, D[Actual+5]   @Retorno si !(costo > 0 && prioridad > 5)
-    Jump llamador
-    SetD Actual-1, D[Actual+5] + (D[Actual+5] / 10) @Retorno si costo > 0 && prioridad > 5
-    Jump llamador
+    
+    JumpT andBmanejarPedido2B, D[Actual+5] > 0 % Si costo > 0, evaluo prioridad > 5   
+    Jump elseAndManejarPedido2B % Si !(costo > 0), salto al else
+    andBmanejarPedido2B
+        JumpT elseAndManejarPedido2B, !(D[Actual+4] > 5) % Si !(prioridad > 5), salto al else
+        SetD Actual-1, D[Actual+5] + (D[Actual+5] / 10) @Retorno si costo > 0 && prioridad > 5
+        Jump llamador
+    elseAndManejarPedido2B
+        SetD Actual-1, D[Actual+5]   @Retorno si !(costo > 0 && prioridad > 5)
+        Jump llamador
 
 obtenerInformacionB
     JumpT tipoInfo1, D[Actual+3] == 1 % super.obtenerInformacion(tipoInfo) si tipoInfo==1
