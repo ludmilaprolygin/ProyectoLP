@@ -41,7 +41,7 @@ main
     oAligado
         SetD Actual+2, PO                         @oA
         SetH PO, VTA
-        SetD libre, PC+5                          @PTR
+        SetD libre, PC+5                          @PTR del constructorA
         SetD Libre+1, Actual                      @ED
         SetActual Libre
         SetLibre Actual+3   % Seteo Libre segun el tamanio del RA de construcorA
@@ -52,7 +52,7 @@ main
     % JumpT finInvocacion, <checkLigado == false>  % Si no esta ligado, no se llama a m1
     JumpT finInvocacion, PO == 0  % Si oA es nulo, no se llama a m1
     SetLibre Libre+1                              @Retorno de oA.m1()
-    SetD Libre, PC+6                              @PTR
+    SetD Libre, PC+6                              @PTR del metodo m1
     SetD Libre+1, Actual                          @ED
     SetD Libre+2, D[Actual+2]                     @this
     SetActual Libre

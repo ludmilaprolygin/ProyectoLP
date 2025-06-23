@@ -100,7 +100,7 @@ General de estructura de la traduccion. Hay alguna convencion para adoptar sobre
 
 #### [ ] Pregunta 7
 Sobre el opcional 1... "_Controlar la referencias nulas antes de enviar un mensaje a un objeto_".
-Ver LP8
+Ver LP8 y resolucion del informe.
 
 #### [X] Pregunta 8
 Hice todos los & y | sin contemplar si funcionaban como && o ||. El enunciado pide ejemplificar con verificarStock de la clase A.
@@ -113,3 +113,7 @@ Quien deberia responsabilizarse de la gestion de memoria en H? El constructor o 
 
 #### [ ] Pregunta 10
 Casos de prueba relevantes?
+
+#### [ ] Pregunta 11
+_"Explique intuitivamente cómo resolvió la traducción del mecanismo de selección múltiple del método procesarLote de clase B. *¿Qué dificultades o consideraciones adicionales existen en caso de que se puedan utilizar tipos más complejos (strings, objetos etc.) para su condición?*"_ 
+Relacion con la cantidad extra de saltos con accesos a memoria? Un centrito.

@@ -63,7 +63,7 @@ main
     obj
         SetD Actual+2, PO                         @obj
         SetH PO, VTB
-        SetD libre, PC+5                          @PTR
+        SetD libre, PC+5                          @PTR de constructorB
         SetD Libre+1, Actual                      @ED
         SetActual Libre
         SetLibre Actual+2   % Seteo Libre segun el tamanio del RA de constructorB
@@ -72,7 +72,7 @@ main
     Jump llamadoM2
     llamadoM2
         SetLibre Libre+1                          @Lugar de retorno m2
-        SetD Libre, PC+6                          @PTR
+        SetD Libre, PC+6                          @PTR de m2
         SetD Libre+1, Actual                      @ED
         SetD Libre+2, D[Actual+2]                 @this
         SetActual Libre
@@ -80,11 +80,12 @@ main
         Jump m2
     llamadoM1
         SetLibre Libre+1                          @Lugar de retorno m1
-        SetD Libre, PC+6                          @PTR
+        SetD Libre, PC+6                          @PTR de m1
         SetD Libre+1, Actual                      @ED
         SetD Libre+2, D[Libre-2]                  @this
         SetActual Libre
         SetLibre Actual+3   % Seteo Libre segun el tamanio del RA de m1
         Jump m1
     SetOut D[Libre-1]       % Impresion del resultado de obj.m2().m1()
+    SetLibre Libre-2    % SE actualiza el valor de libre para que no haya desperdicio de memoria
     Jump llamador
