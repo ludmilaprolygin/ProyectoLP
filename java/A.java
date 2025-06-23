@@ -16,6 +16,15 @@ public class A {
         valorUnitario = 10;
     }
     
+    public String toString()
+    {
+      return "totalItemsCreados: " + totalItemsCreados + "\n" +
+        "limiteProcesamiento: " + limiteProcesamiento + "\n" +
+        "itemId: " + itemId + "\n" +
+        "cantidadDisponible: " + cantidadDisponible + "\n" +
+        "valorUnitario: " + valorUnitario + "\n";
+    }
+    
     public int procesarLote() {
         int itemsProcesados = 0;
         int i = 0;

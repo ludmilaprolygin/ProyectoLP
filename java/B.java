@@ -10,6 +10,12 @@ public class B extends A {
         ubicacionAlmacen = 1000 + itemId; 
         tipoProducto = (itemId % 2) + 1; 
     }
+    
+    public String toString()
+    {
+      return super.toString() + "ubicacionAlmacen: " + ubicacionAlmacen + "\n" +
+        "tipoProducto: " + tipoProducto + "\n";
+    }
 
     public int procesarLote() {
         int resultadoBase = super.procesarLote();

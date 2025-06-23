@@ -10,6 +10,13 @@ public class C extends B {
         numeroOrden = ordenId;
         inicializarProductoPrincipal();
     }
+    
+    public String toString()
+    {
+      return super.toString() + "\n\nproductoPrincipal: " + 
+        productoPrincipal.toString() + "\n\n" +
+        "numeroOrden: " + numeroOrden;
+    }
 
     public void inicializarProductoPrincipal(){
         productoPrincipal = new B();
