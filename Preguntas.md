@@ -23,7 +23,7 @@ verificarStockA
     Jump llamador
 ```
 
-#### [ ] Pregunta 2
+#### [X] Pregunta 2
 Vale la pena agregar una etiqueta para resolver mod?
 Considerando el siguiente pseudocodigo:
 ```
@@ -77,7 +77,7 @@ SetLibre Actual+4
 Jump mod
 ```
 
-#### [ ] Pregunta 3
+#### [X] Pregunta 3
 Sobre los CRs... El valor se asigna cuando se ejecuta, pero no hay una instruccion de codigo que haga la asignacion fuera de la declaracion. 
 El esquema es sin valor, pero en el codigo si le pongo el valor correspondiente?
 ```simplon
@@ -88,14 +88,14 @@ El esquema es sin valor, pero en el codigo si le pongo el valor correspondiente?
     SetActual Libre
 ```
 
-#### [ ] Pregunta 4
+#### [X] Pregunta 4
 main es un caso especial en el que no tiene PTR ni ED; puede no ir. Entonces en memoria D, D[Actual] no tiene PTR sino el primer parametro/variable de main. Al terminar main, no podria volver al llamador, pongo Halt al final?
 --> No lo hice asi, le puse PTR y ED. Pero si no lo hiciera, como lo resuelvo? Omito llamada main?
 
-#### [ ] Pregunta 5
+#### [X] Pregunta 5
 Cuando conviene usar etiquetas, y cuando conviene usar PC+offset?
 
-#### [ ] Pregunta 6
+#### [X] Pregunta 6
 General de estructura de la traduccion. Hay alguna convencion para adoptar sobre orden de codigo y etiquetas?
 
 #### [ ] Pregunta 7
@@ -108,10 +108,10 @@ Con cortocircuito puede "traer problemas" porque puede haber efectos colaterales
 - Como funcionan los & y | en simplOn? Sin cortocircuito?
 - Como hago el abordaje de la evaluacion respecto de verificarStock contemplando lo anterior?
 
-#### [ ] Pregunta 9
+#### [X] Pregunta 9
 Quien deberia responsabilizarse de la gestion de memoria en H? El constructor o el llamador del constructor? Me genero dudas la diapo.
 
-#### [ ] Pregunta 10
+#### [X] Pregunta 10
 Casos de prueba relevantes?
 
 #### [ ] Pregunta 11

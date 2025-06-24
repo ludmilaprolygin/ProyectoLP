@@ -1,15 +1,9 @@
 % Class Records
-% CR de la clase A
-    % CR de totalItemsCreados
-    SetLabel CRAtotalItems, Libre
+    % CR de la clase A
+    SetLabel CRA, Libre
     SetD Libre, 0                                 @totalItemsCreados=0
-    SetLibre Libre+1
-    SetActual Libre
-
-    %CR de limiteProcesamiento
-    SetLabel CRAlimiteProcesamiento, Libre
-    SetD Libre, 100                               @limiteProcesamiento=100
-    SetLibre Libre+1
+    SetD Libre+1, 100                             @limiteProcesamiento=100
+    SetLibre Libre+2
     SetActual Libre
 
 % Virtual Tables
@@ -72,8 +66,8 @@ mod
         % Constructor de la clase A
 constructorA 
     SetH PO, VTA                            @VTA
-    SetD CRAtotalItems, D[CRAtotalItems]+1  @totalItemsCreados++
-    SetH PO+1, D[CRAtotalItems]*100         @id = totalItemsCreados * 100
+    SetD CRA, D[CRA]+1                      @totalItemsCreados++
+    SetH PO+1, D[CRA]*100                   @id = totalItemsCreados * 100
     SetH PO+2, 50                           @cantidadDisponible = 50
     SetH PO+3, 10                           @valorUnitario = 10
     SetPO PO+4                              @Corro PO segun atributos declarados en la clase A + la VT
@@ -94,7 +88,7 @@ procesarLoteA
     condicionBucleProcesarLoteA
         JumpT finBucleProcesarLoteA, ((D[Actual+4] < H[D[Actual+2]+2]) & (D[Actual+5] >= 0))==0 @!(i < cantidadDisponible & stock >= 0) % Condicion de salida del bucle
         SetD Actual+3, D[Actual+3] + (D[Actual+4] - ((D[Actual + 4] / 5) * 5)) + 1 @itemsProcesados += (i mod 5) + 1
-        JumpT finBucleProcesarLoteA, D[Actual+3] > D[CRAlimiteProcesamiento] % Si se supera el limite de procesamiento, salto
+        JumpT finBucleProcesarLoteA, D[Actual+3] > D[CRA + 1] % Si se supera el limite de procesamiento, salto
         SetD Actual+4, D[Actual+4] + 1 @i = i+1
         Jump condicionBucleProcesarLoteA % Salto al chequeo de la condicion de salida del bucle
     finBucleProcesarLoteA
@@ -193,11 +187,12 @@ manejarPedido1B
 
 manejarPedido2B
     SetLibre Libre+1            @Lugar retorno % Como manejarPedido1B devuelve algo, hago el huequito
-    SetD Libre, PC+6            @PTR de manejarPedido1B
+    SetD Libre, PC+7            @PTR de manejarPedido1B
     SetD Libre+1, Actual        @ED
     SetD Libre+2, D[Actual+2]   @this
+    SetD Libre+3, D[Actual+3]   @cantidadSolicitada
     SetActual Libre
-    SetLibre Actual+5           % Seteo Libre segun el tamanio del RA de procesarLoteA
+    SetLibre Actual+4           % Seteo Libre segun el tamanio del RA de procesarLoteA
     Jump D[H[D[Actual+2]]+4]    % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
     SetD Actual+5, D[Libre-1]   @costo = this.manejarPedido(cantidadSolicitada);
     
