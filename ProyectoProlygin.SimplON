@@ -56,11 +56,6 @@ llamador
     SetActual D[Actual+1]   % Muevo actual a donde tenia el enlace dinamico 
     Jump D[Libre]  
 
-% Traduccion de auxiliares de uso general
-mod
-    SetD Actual-1, D[Actual+2] - ((D[Actual+2] / D[Actual+3]) * D[Actual+3])  
-    Jump llamador
-
 % Traduccion de las clases
     % Traduccion de la clase A
         % Constructor de la clase A
@@ -100,7 +95,7 @@ procesarLoteA
 
 obtenerInformacionA 
     JumpT PC+2, D[Actual+3] == 1 % Si tipoInfo==1, salto
-    SetD Actual-1, (H[D[Actual+2]+3] * H[D[Actual+2]+2]) + Actual+3   @Retorno de obtenerInformacionA para tipoInfo != 1 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
+    SetD Actual-1, (H[D[Actual+2]+3] * H[D[Actual+2]+2]) + D[Actual+3]   @Retorno de obtenerInformacionA para tipoInfo != 1 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
     Jump PC+1
     SetD Actual-1, H[D[Actual+2]+1]                                   @Retorno de obtenerInformacionA para tipoInfo == 1 % Guardo en Actual-1 porque como devuelvo un resultado, dejo un huequito
     Jump llamador
@@ -212,9 +207,10 @@ obtenerInformacionB
     Jump llamador
     tipoInfo1
         SetLibre Libre+1            @Lugar retorno % Como obtenerInformacionA devuelve algo, hago el huequito
-        SetD Libre, PC+6            @PTR de obtenerInformacionA
+        SetD Libre, PC+7            @PTR de obtenerInformacionA
         SetD Libre+1, Actual        @ED
         SetD Libre+2, D[Actual+2]   @this
+        SetD Libre+3, D[Actual+3]   @tipoInfo
         SetActual Libre
         SetLibre Actual+4           % Seteo Libre segun el tamanio del RA de obtenerInformacionA
         Jump obtenerInformacionA
