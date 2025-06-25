@@ -102,6 +102,8 @@ General de estructura de la traduccion. Hay alguna convencion para adoptar sobre
 Sobre el opcional 1... "_Controlar la referencias nulas antes de enviar un mensaje a un objeto_".
 Ver LP8 y resolucion del informe.
 
+----- Controlar loc de H en el RA; deberia ser menor PO pero mayor que 0.
+
 #### [X] Pregunta 8
 Hice todos los & y | sin contemplar si funcionaban como && o ||. El enunciado pide ejemplificar con verificarStock de la clase A.
 Con cortocircuito puede "traer problemas" porque puede haber efectos colaterales (false && i++ ; true || i++). En el codigo provisto en java no pasa, por lo que si no se hiciera el control entero, _no hay problema_.
@@ -117,3 +119,5 @@ Casos de prueba relevantes?
 #### [ ] Pregunta 11
 _"Explique intuitivamente cómo resolvió la traducción del mecanismo de selección múltiple del método procesarLote de clase B. *¿Qué dificultades o consideraciones adicionales existen en caso de que se puedan utilizar tipos más complejos (strings, objetos etc.) para su condición?*"_ 
 Relacion con la cantidad extra de saltos con accesos a memoria? Un centrito.
+
+----- Chequear el hecho de que tenes que hacer comparacion de valores en H
