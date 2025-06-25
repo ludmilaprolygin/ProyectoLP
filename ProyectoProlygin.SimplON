@@ -148,8 +148,7 @@ procesarLoteB
     SetD Libre+2, D[Actual+2]   @this
     SetActual Libre
     SetLibre Actual+6           % Seteo Libre segun el tamanio del RA de procesarLoteA
-    %Jump procesarLoteA          % super.procesarLote()
-    Jump D[D[H[D[Actual+2]]+6]] @obj --> VT del obj --> VT del padre --> procesarLote del padre %super.procesarLote()
+    Jump D[D[VTB + 6]]          % ubicacion de super.procesarLote()
     SetD Actual+3, D[Libre-1]   @resultadoBase = super.procesarLote()
     SetD Actual+4, 0            @ajuste = 0
     switchProcesarLoteB
@@ -214,8 +213,7 @@ obtenerInformacionB
         SetD Libre+3, D[Actual+3]   @tipoInfo
         SetActual Libre
         SetLibre Actual+4           % Seteo Libre segun el tamanio del RA de obtenerInformacionA
-        %Jump obtenerInformacionA
-        Jump D[D[H[D[Actual+2]]+1]] @obj --> VT del obj --> VT del padre --> obtenerInformacion del padre %super.obtenerInformacion(tipoInfo)
+        Jump D[D[VTB + 6] + 1]      % super.obtenerInformacion()
         SetD Actual-1, D[Libre-1] + H[D[Actual+2]+4] @Retorno de super.obtenerInformacion(tipoInfo)
         Jump llamador
 
@@ -226,8 +224,7 @@ obtenerValorUnitarioB
     SetD Libre+2, D[Actual+2]   @this
     SetActual Libre
     SetLibre Actual+3           % Seteo Libre segun el tamanio del RA de obtenerValorUnitarioA
-    %Jump obtenerValorUnitarioA
-    Jump D[D[H[D[Actual+2]]+2]] @obj --> VT del obj --> VT del padre --> obtenerValorUnitario del padre %super.obtenerValorUnitario()
+    Jump D[D[VTB + 6] + 2]      % super.obtenerValorUnitario()
     SetD Actual-1, D[Libre-1] + (H[D[Actual+2]+5] * 2) @Retorno de obtenerValorUnitario()
     Jump llamador
 
@@ -253,7 +250,6 @@ constructorC
 
         % Metodos de la clase C
 inicializarProductoPrincipalC
-    %SetD Actual+2, PO   @productoPrincipal
     SetH D[Actual+2]+6, PO @productoPrincipal
     SetD Libre, PC+5    @PTR de constructorB
     SetD Libre+1, Actual    @ED
