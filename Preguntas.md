@@ -122,8 +122,8 @@ Relacion con la cantidad extra de saltos con accesos a memoria? Un centrito.
 
 ----- Chequear el hecho de que tenes que hacer comparacion de valores en H
 
-#### [ ] Pregunta 12
+#### [X] Pregunta 12
 Sobre la correccion del constructor y creacion de objetos. Esta bien?
 
-#### [ ] Pregunta 13
+#### [X] Pregunta 13
 Como afecta en la traduccion tener modificadores de acceso? 
