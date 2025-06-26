@@ -60,12 +60,10 @@ llamador
     % Traduccion de la clase A
         % Constructor de la clase A
 constructorA 
-    SetH PO, VTA                            @VTA
     SetD CRA, D[CRA]+1                      @totalItemsCreados++
-    SetH PO+1, D[CRA]*100                   @id = totalItemsCreados * 100
-    SetH PO+2, 50                           @cantidadDisponible = 50
-    SetH PO+3, 10                           @valorUnitario = 10
-    SetPO PO+4                              @Corro PO segun atributos declarados en la clase A + la VT
+    SetH D[Actual-1]+1, D[CRA]*100                   @id = totalItemsCreados * 100
+    SetH D[Actual-1]+2, 50                           @cantidadDisponible = 50
+    SetH D[Actual-1]+3, 10                           @valorUnitario = 10
     Jump llamador
 
         % Metodos de la clase A
@@ -128,16 +126,15 @@ verificarStockA
     % Traduccion de la clase B
         % Constructor de la clase B
 constructorB
+    SetD Libre, D[Actual-1]
+    SetLibre Libre+1
     SetD Libre, PC+5           @PTR de constructorA
     SetD Libre+1, Actual       @ED
     SetActual Libre
     SetLibre Actual+2          % Seteo Libre segun el tamanio del RA de constructorA
     Jump constructorA          % super()
-    SetPO PO-4                 @Corro PO segun atributos de clase B + la VT
-    SetH PO, VTB               @VTB
-    SetH PO+4, 1000 + H[PO+1]  @ubicacionAlmacen = 1000 + itemId
-    SetH PO+5, (H[PO+2] - ((H[PO+2] / 2) * 2)) + 1   @tipoProducto = (itemId mod 2) + 1
-    SetPO PO+6                 @Corro PO segun INST_B
+    SetH D[Actual-1]+4, 1000 + H[D[Actual-1]+1]  @ubicacionAlmacen = 1000 + itemId
+    SetH D[Actual-1]+5, (H[D[Actual-1]+2] - ((H[D[Actual-1]+2] / 2) * 2)) + 1   @tipoProducto = (itemId mod 2) + 1
     Jump llamador
 
         % Metodos de la clase B
@@ -231,18 +228,19 @@ obtenerValorUnitarioB
     % Traduccion de la clase C
         % Constructor de la clase C
 constructorC
+    SetD Libre, D[Actual-1]
+    SetLibre Libre+1     
     SetD Libre, PC+5           @PTR de constructorB
     SetD Libre+1, Actual       @ED
     SetActual Libre
-    SetLibre Actual+2          % Seteo Libre segun el tamanio del RA de constructorB
+    SetLibre Actual+2          % Seteo Libre segun el tamanio del RA de constructorB    
     Jump constructorB
-    SetPO PO-6                 @Corro PO segun atributos de clase C + la VT
-    SetH PO, VTC               @VTC
-    SetH PO+7, D[Actual+2]     @numeroOrden = ordenId
-    SetD Libre, PC+7           @PTR de inicializarProductoPrincipalC
+    
+    SetH D[Actual-1]+7, D[Actual+2]     @numeroOrden = ordenId
+
+    SetD Libre, PC+6           @PTR de inicializarProductoPrincipalC
     SetD Libre+1, Actual       @ED
-    SetD Libre+2, PO           @this = gestorPrincipal
-    SetPO PO+8                 @Corro PO segun INST_C
+    SetD Libre+2, D[Actual-1]           @this = gestorPrincipal
     SetActual Libre
     SetLibre Actual+3  
     Jump inicializarProductoPrincipalC
@@ -250,11 +248,15 @@ constructorC
 
         % Metodos de la clase C
 inicializarProductoPrincipalC
-    SetH D[Actual+2]+6, PO @productoPrincipal
-    SetD Libre, PC+5    @PTR de constructorB
+    SetD Libre, PO
+    SetH D[Actual+2]+6, D[Libre] @productoPrincipal
+    SetH D[Libre], VTB
+    SetLibre Libre+1
+    SetD Libre, PC+6    @PTR de constructorB
     SetD Libre+1, Actual    @ED
     SetActual Libre
     SetLibre Actual+2           % Seteo Libre segun el tamanio del RA de constructorB
+    SetPO PO+6
     Jump constructorB
     Jump llamador
 
@@ -322,12 +324,17 @@ cumplirOrdenComplejaC
 main
     SetIn Actual+2             @solicitudInicial = Sistema.read(); 
     SetIn Actual+3             @prioridadOrden = Sistema.read();
-    SetD Actual+4, PO          @gestorPrincipal
-    SetD Libre, PC+6           @PTR de constructorC
+    SetD Libre, PO 
+    SetD Actual+4, D[Libre]    @gestorPrincipal
+    SetH D[libre], VTC
+
+    SetLibre Libre+1           @espacio para direccion de heap del objeto a crear
+    SetD Libre, PC+7           @PTR de constructorC
     SetD Libre+1, Actual       @ED
     SetD Libre+2, 100          @ordenId
     SetActual Libre
     SetLibre Actual+3          % Seteo Libre segun el tamanio del RA de constructorC
+    SetPO PO+8
     Jump constructorC
     print1
         SetLibre Libre+1           @Lugar retorno % Como obtenerInformacion devuelve algo, hago el huequito
