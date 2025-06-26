@@ -8,37 +8,37 @@
 
 % Virtual Tables
     % VT de la clase A
-    SetLabel VTA, Libre
-    SetD Libre, procesarLoteA                     @VT_A: direccion procesarLote() - A           
-    SetD Libre+1, obtenerInformacionA             @VT_A: direccion obtenerInformacion(int tipoInfo) - A
-    SetD Libre+2, obtenerValorUnitarioA           @VT_A: direccion obtenerValorUnitario() - A
-    SetD Libre+3, verificarStockA                 @VT_A: direccion verificarStock() - A
-    SetLibre Libre+4                              
+    SetLabel VTA, Libre                           % Dejo un espacio libre para simular VT de Object
+    SetD Libre+1, procesarLoteA                   @VT_A: direccion procesarLote() - A           
+    SetD Libre+2, obtenerInformacionA             @VT_A: direccion obtenerInformacion(int tipoInfo) - A
+    SetD Libre+3, obtenerValorUnitarioA           @VT_A: direccion obtenerValorUnitario() - A
+    SetD Libre+4, verificarStockA                 @VT_A: direccion verificarStock() - A
+    SetLibre Libre+5                              
     SetActual Libre
 
     % VT de la clase B
     SetLabel VTB, Libre
-    SetD Libre, procesarLoteB                     @VT_B: direccion procesarLote() - B
-    SetD Libre+1, obtenerInformacionB             @VT_B: direccion obtenerInformacion(int tipoInfo) - B
-    SetD Libre+2, obtenerValorUnitarioB           @VT_B: direccion obtenerValorUnitario() - B
-    SetD Libre+3, verificarStockA                 @VT_B: direccion verificarStock() - A
-    SetD Libre+4, manejarPedido1B                 @VT_B: direccion manejarPedido(int cantidadSolicitada) - B
-    SetD Libre+5, manejarPedido2B                 @VT_B: direccion manejarPedido(int cantidadSolicitada, int prioridad) - B
-    SetD Libre+6, VTA                             @VT_B: direccion de VT_A
+    SetD Libre, VTA                               @VT_B: direccion de VT_A
+    SetD Libre+1, procesarLoteB                   @VT_B: direccion procesarLote() - B
+    SetD Libre+2, obtenerInformacionB             @VT_B: direccion obtenerInformacion(int tipoInfo) - B
+    SetD Libre+3, obtenerValorUnitarioB           @VT_B: direccion obtenerValorUnitario() - B
+    SetD Libre+4, verificarStockA                 @VT_B: direccion verificarStock() - A
+    SetD Libre+5, manejarPedido1B                 @VT_B: direccion manejarPedido(int cantidadSolicitada) - B
+    SetD Libre+6, manejarPedido2B                 @VT_B: direccion manejarPedido(int cantidadSolicitada, int prioridad) - B                            
     SetLibre Libre+7
     SetActual Libre 
 
     % VT de la clase C
     SetLabel VTC, Libre
-    SetD Libre, procesarLoteB                     @VT_C: direccion procesarLote() - B
-    SetD Libre+1, obtenerInformacionB             @VT_C: direccion obtenerInformacion(int tipoInfo) - B
-    SetD Libre+2, obtenerValorUnitarioB           @VT_C: direccion obtenerValorUnitario() - B
-    SetD Libre+3, verificarStockA                 @VT_C: direccion verificarStock() - A
-    SetD Libre+4, manejarPedido1B                 @VT_C: direccion manejarPedido(int cantidadSolicitada) - B
-    SetD Libre+5, manejarPedido2B                 @VT_C: direccion manejarPedido(int cantidadSolicitada, int prioridad) - B
-    SetD Libre+6, inicializarProductoPrincipalC   @VT_C: direccion inicializarProductoPrincipal() - C
-    SetD Libre+7, cumplirOrdenComplejaC           @VT_C: direccion cumplirOrdenCompleja(int cantidadNecesaria) - C
-    SetD Libre+8, VTB                             @VT_C: direccion de VT_B
+    SetD Libre, VTB                               @VT_C: direccion de VT_B
+    SetD Libre+1, procesarLoteB                   @VT_C: direccion procesarLote() - B
+    SetD Libre+2, obtenerInformacionB             @VT_C: direccion obtenerInformacion(int tipoInfo) - B
+    SetD Libre+3, obtenerValorUnitarioB           @VT_C: direccion obtenerValorUnitario() - B
+    SetD Libre+4, verificarStockA                 @VT_C: direccion verificarStock() - A
+    SetD Libre+5, manejarPedido1B                 @VT_C: direccion manejarPedido(int cantidadSolicitada) - B
+    SetD Libre+6, manejarPedido2B                 @VT_C: direccion manejarPedido(int cantidadSolicitada, int prioridad) - B
+    SetD Libre+7, inicializarProductoPrincipalC   @VT_C: direccion inicializarProductoPrincipal() - C
+    SetD Libre+8, cumplirOrdenComplejaC           @VT_C: direccion cumplirOrdenCompleja(int cantidadNecesaria) - C                            
     SetLibre Libre+9
     SetActual Libre
 
@@ -76,7 +76,7 @@ procesarLoteA
     SetD Libre+2, D[Actual+2]   @This
     SetActual Libre
     SetLibre Actual+3           % Seteo Libre segun el tamanio del RA de verificarStock
-    Jump D[H[D[Actual+2]]+3]    % Salto al codigo de verificarStock segun la VT del objeto receptor              
+    Jump D[H[D[Actual+2]]+4]    % Salto al codigo de verificarStock segun la VT del objeto receptor              
     SetD Actual+5, D[Libre-1]   @Retorno de verificarStock % Guardo en Actual+5 porque hay esta la variable stock. Ademas, saco de Libre-1 porque hay verificarStock me guardo el resultado
     condicionBucleProcesarLoteA
         JumpT finBucleProcesarLoteA, ((D[Actual+4] < H[D[Actual+2]+2]) & (D[Actual+5] >= 0))==0 @!(i < cantidadDisponible & stock >= 0) % Condicion de salida del bucle
@@ -145,7 +145,7 @@ procesarLoteB
     SetD Libre+2, D[Actual+2]   @this
     SetActual Libre
     SetLibre Actual+6           % Seteo Libre segun el tamanio del RA de procesarLoteA
-    Jump D[D[VTB + 6]]          % ubicacion de super.procesarLote()
+    Jump D[D[VTB]+1]            % ubicacion de super.procesarLote()
     SetD Actual+3, D[Libre-1]   @resultadoBase = super.procesarLote()
     SetD Actual+4, 0            @ajuste = 0
     switchProcesarLoteB
@@ -185,7 +185,7 @@ manejarPedido2B
     SetD Libre+3, D[Actual+3]   @cantidadSolicitada
     SetActual Libre
     SetLibre Actual+4           % Seteo Libre segun el tamanio del RA de procesarLoteA
-    Jump D[H[D[Actual+2]]+4]    % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
+    Jump D[H[D[Actual+2]]+5]    % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
     SetD Actual+5, D[Libre-1]   @costo = this.manejarPedido(cantidadSolicitada);
     
     JumpT andBmanejarPedido2B, D[Actual+5] > 0 % Si costo > 0, evaluo prioridad > 5   
@@ -210,7 +210,7 @@ obtenerInformacionB
         SetD Libre+3, D[Actual+3]   @tipoInfo
         SetActual Libre
         SetLibre Actual+4           % Seteo Libre segun el tamanio del RA de obtenerInformacionA
-        Jump D[D[VTB + 6] + 1]      % super.obtenerInformacion()
+        Jump D[D[VTB] + 2]      % super.obtenerInformacion()
         SetD Actual-1, D[Libre-1] + H[D[Actual+2]+4] @Retorno de super.obtenerInformacion(tipoInfo)
         Jump llamador
 
@@ -221,7 +221,7 @@ obtenerValorUnitarioB
     SetD Libre+2, D[Actual+2]   @this
     SetActual Libre
     SetLibre Actual+3           % Seteo Libre segun el tamanio del RA de obtenerValorUnitarioA
-    Jump D[D[VTB + 6] + 2]      % super.obtenerValorUnitario()
+    Jump D[D[VTB] + 3]      % super.obtenerValorUnitario()
     SetD Actual-1, D[Libre-1] + (H[D[Actual+2]+5] * 2) @Retorno de obtenerValorUnitario()
     Jump llamador
 
@@ -243,7 +243,7 @@ constructorC
     SetD Libre+2, D[Actual-1]           @this = gestorPrincipal
     SetActual Libre
     SetLibre Actual+3  
-    Jump inicializarProductoPrincipalC
+    Jump D[H[D[Actual-1]]+7]
     Jump llamador
 
         % Metodos de la clase C
@@ -272,7 +272,7 @@ cumplirOrdenComplejaC
         SetD Libre+3, D[Actual+4]/2       @cantidadSolicitada = itemsFaltantes/2
         SetActual Libre
         SetLibre Actual+4                 % Seteo Libre segun el tamanio del RA de manejarPedido1B
-        Jump D[H[D[Actual+2]]+4]          % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
+        Jump D[H[D[Actual+2]]+5]          % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
         SetD Actual+7, D[Libre-1]         @procesadoAhora = productoPrincipal.manejarPedido(itemsFaltantes/2);
         SetLibre Libre-1
         JumpT procesadoAhoraMenosUno, D[Actual+7] == -1 % Si procesadoAhora==-1, salto
@@ -287,7 +287,7 @@ cumplirOrdenComplejaC
             SetD Libre+3, D[Actual+4]         @cantidadSolicitada = itemsFaltantes
             SetActual Libre
             SetLibre Actual+5                 % Seteo Libre segun el tamanio del RA de manejarPedido1B
-            Jump D[H[D[Actual+2]]+4]          % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
+            Jump D[H[D[Actual+2]]+5]          % Salto al codigo de manejarPedido1B segun la VT del objeto receptor
             SetLibre Libre-1
             SetD Actual+7, D[Libre]         @procesadoAhora = productoPrincipal.manejarPedido(itemsFaltantes);
             JumpT procesadoAhoraPositivo, D[Actual+7] > 0   % Si procesadoAhora>0, salto
@@ -304,7 +304,7 @@ cumplirOrdenComplejaC
             SetD Libre+2, H[D[Actual+2]+6]    @this = productoPrincipal
             SetActual Libre
             SetLibre Actual+5                 % Seteo Libre segun el tamanio del RA de obtenerValorUnitario
-            Jump D[H[D[Actual+2]]+2]          % Salto al codigo de obtenerValorUnitario segun la VT del objeto receptor
+            Jump D[H[D[Actual+2]]+3]          % Salto al codigo de obtenerValorUnitario segun la VT del objeto receptor
             SetLibre Libre-1
             SetD Actual+4, D[Actual+4] - (D[Actual+7] / D[Libre]) @itemsFaltantes -= (procesadoAhora / valorUnitario)
             SetD Actual+5, D[Actual+5]+1      @vecesProcesados++
@@ -344,7 +344,7 @@ main
         SetD Libre+3, D[Actual+3]  @tipoInfo
         SetActual Libre
         SetLibre Actual+4          % Seteo Libre segun el tamanio del RA de obtenerInformacionB
-        Jump D[H[D[Actual+2]]+1]   % Salto al codigo de obtenerInformacion segun la VT del objeto receptor
+        Jump D[H[D[Actual+2]]+2]   % Salto al codigo de obtenerInformacion segun la VT del objeto receptor
         SetOut D[Libre-1]          @Salida de obtenerInformacion
     print2
         SetLibre Libre+1           @Lugar retorno % Como procesarLote devuelve algo, hago el huequito
@@ -353,7 +353,7 @@ main
         SetD Libre+2, D[Actual+4]  @this
         SetActual Libre
         SetLibre Actual+5          % Seteo Libre segun el tamanio del RA de procesarLote
-        Jump D[H[D[Actual+2]]]     % Salto al codigo de procesarLote segun la VT del objeto receptor
+        Jump D[H[D[Actual+2]]+1]     % Salto al codigo de procesarLote segun la VT del objeto receptor
         SetOut D[Libre-1]          @Salida de procesarLote
     print3
         SetLibre Libre+1           @Lugar retorno % Como cumplirOrdenCompleja devuelve algo, hago el huequito
@@ -363,6 +363,6 @@ main
         SetD Libre+3,  D[Actual+2] * D[Actual+2] * D[Actual+3]   @tipoInfo
         SetActual Libre
         SetLibre Actual+8          % Seteo Libre segun el tamanio del RA de cumplirOrdenCompleja
-        Jump D[H[D[Actual+2]]+7]   % Salto al codigo de cumplirOrdenCompleja segun la VT del objeto receptor
+        Jump D[H[D[Actual+2]]+8]   % Salto al codigo de cumplirOrdenCompleja segun la VT del objeto receptor
         SetOut D[Libre-1]          @Salida de cumplirOrdenCompleja
     Jump llamador
