@@ -22,8 +22,8 @@ llamador
     % Traduccion de la clase A
         % Constructor de la clase A
 constructorA 
-    SetH PO+1, 6               @v1=6
-    SetH PO+2, 7               @v2=7
+    SetH D[Actual-1]+1, 6               @v1=6
+    SetH D[Actual-1]+2, 7               @v2=7
     Jump llamador
 
 m1
@@ -36,29 +36,30 @@ m1
 % Descomentar Jump invocacion si se quiere probar oA nulo
 % Descomentar Jump oAligado si se quiere probar oA ligado
 main 
-    Jump invocacion % Hace las veces de A oA = null;
-    % Jump oAligado % Hace las veces de A oA = new A();
+    %Jump invocacion % Hace las veces de A oA = null;
+    Jump oAligado % Hace las veces de A oA = new A();
     oAligado
-        SetD Actual+2, PO                         @oA
-        SetH PO, VTA
-        SetD libre, PC+5                          @PTR del constructorA
+        SetD Libre, PO
+        SetLibre Libre+1
+        SetD Actual+2, D[Libre]                         @oA
+        SetH D[Libre], VTA
+        SetD libre, PC+6                          @PTR del constructorA
         SetD Libre+1, Actual                      @ED
         SetActual Libre
         SetLibre Actual+3   % Seteo Libre segun el tamanio del RA de construcorA
-        Jump constructorA
         SetPO PO+2
+        Jump constructorA
     invocacion
-    %%%%%%% Aca iria el condicional para oA.m1() %%%%%%%
     % JumpT finInvocacion, <checkLigado == false>  % Si no esta ligado, no se llama a m1
-    JumpT finInvocacion, PO == 0  % Si oA es nulo, no se llama a m1
+    JumpT finInvocacion, PO <= 0  % Si oA es nulo, no se llama a m1
+    JumpT finInvocacion, PO < D[Actual+2]
     SetLibre Libre+1                              @Retorno de oA.m1()
     SetD Libre, PC+6                              @PTR del metodo m1
     SetD Libre+1, Actual                          @ED
     SetD Libre+2, D[Actual+2]                     @this
     SetActual Libre
     SetLibre Actual+3   % Seteo Libre segun el tamanio del RA de m1
-    Jump m1
+    Jump D[H[D[Actual+2]]]
     SetOut D[Libre-1]  % Impresion del resultado de oA.m1()
-    %%%%%%% Aca iria el condicional para oA.m1() %%%%%%%
     finInvocacion
         Jump llamador

@@ -23,10 +23,10 @@ llamador
         % Constructor de la clase A
 constructorA 
     JumpT else, !(D[Actual+2] > D[Actual+3])
-    SetH PO+1, D[Actual+2] + 10                   @v1=x+10
+    SetH D[Actual-1]+1, D[Actual+2] + 10                   @v1=x+10
     Jump llamador
     else
-        SetH PO+1, D[Actual+3]                    @v1=y
+        SetH D[Actual-1]+1, D[Actual+3]                    @v1=y
     Jump llamador
 
 m1 
@@ -38,41 +38,45 @@ m1
 main
     Jump o1
     o1
-        SetD Actual+2, PO                         @o1
-        SetH PO, VTA
-        SetD libre, PC+7                          @PTR del constructorA
+        SetD Libre, PO
+        SetLibre Libre+1
+        SetD Actual+2, D[Libre]                         @o1
+        SetH D[Libre], VTA
+        SetD libre, PC+8                          @PTR del constructorA
         SetD Libre+1, Actual                      @ED
         SetD Libre+2, 5                           @x
         SetD Libre+3, 2                           @y 
         SetActual Libre
         SetLibre Actual+4   % Seteo Libre segun el tamanio del RA de construcorA
-        Jump constructorA
         SetPO PO+2
+        Jump constructorA
     SetLibre Libre+1                              @Retorno de o1.m1()
     SetD Libre, PC+6                              @PTR de m1
     SetD Libre+1, Actual                          @ED
     SetD Libre+2, D[Actual+2]                     @this
     SetActual Libre
     SetLibre Actual+3   % Seteo Libre segun el tamanio del RA de m1
-    Jump m1
+    Jump D[H[D[Actual+2]]]
     SetOut D[Libre-1]  % Impresion del resultado de o1.m1()
     o2
-        SetD Actual+3, PO                         @o2
-        SetH PO, VTA
-        SetD libre, PC+7                          @PTR del constructorA
+        SetD Libre, PO
+        SetLibre Libre+1
+        SetD Actual+3, D[Libre]                         @o2
+        SetH D[Libre], VTA
+        SetD libre, PC+8                          @PTR del constructorA
         SetD Libre+1, Actual                      @ED
         SetD Libre+2, -3                          @x
         SetD Libre+3, 2                           @y   
         SetActual Libre
         SetLibre Actual+4   % Seteo Libre segun el tamanio del RA de construcorA
-        Jump constructorA
         SetPO PO+2
+        Jump constructorA
     SetLibre Libre+1                              @Retorno de o1.m1()
     SetD Libre, PC+6                              @PTR de m1
     SetD Libre+1, Actual                          @ED
     SetD Libre+2, D[Actual+3]                     @this
     SetActual Libre
     SetLibre Actual+3   % Seteo Libre segun el tamanio del RA de m1
-    Jump m1
+    Jump D[H[D[Actual+2]]]
     SetOut D[Libre-1]
     Jump llamador

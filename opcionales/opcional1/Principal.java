@@ -9,5 +9,4 @@ public class Principal {
 
         Sistema.print(oA.m1());
     }
-    
 }
