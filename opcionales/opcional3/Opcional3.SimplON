@@ -45,9 +45,9 @@ m2
     Jump o1
     o1
         SetD Libre, PO
-        SetLibre Libre+1
         SetD Actual+3, D[Libre]                         @o1
         SetH D[Libre], VTA
+        SetLibre Libre+1
         SetD Libre, PC+7                          @PTR
         SetD Libre+1, Actual                      @ED
         SetD Libre+2, H[D[Actual+2]+1]            @x 
@@ -64,9 +64,9 @@ main
     Jump obj
     obj
         SetD Libre, PO
-        SetLibre Libre+1
         SetD Actual+2, D[Libre]                         @obj
         SetH D[Libre], VTB
+        SetLibre Libre+1
         SetD libre, PC+6                          @PTR de constructorB
         SetD Libre+1, Actual                      @ED
         SetActual Libre

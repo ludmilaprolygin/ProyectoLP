@@ -40,9 +40,9 @@ main
     Jump oAligado % Hace las veces de A oA = new A();
     oAligado
         SetD Libre, PO
-        SetLibre Libre+1
         SetD Actual+2, D[Libre]                         @oA
         SetH D[Libre], VTA
+        SetLibre Libre+1
         SetD libre, PC+6                          @PTR del constructorA
         SetD Libre+1, Actual                      @ED
         SetActual Libre
