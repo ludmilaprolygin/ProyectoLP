@@ -104,6 +104,8 @@ Ver LP8 y resolucion del informe.
 
 ----- Controlar loc de H en el RA; deberia ser menor PO pero mayor que 0.
 
+Que pasa si lo que hay en el lugar de la variable que referencia al objeto es un numero basura que satisface que sea menor al PO? Es mi responsabilidad vaciar/limpiar el stack o solo digo que puede suceder?
+
 #### [X] Pregunta 8
 Hice todos los & y | sin contemplar si funcionaban como && o ||. El enunciado pide ejemplificar con verificarStock de la clase A.
 Con cortocircuito puede "traer problemas" porque puede haber efectos colaterales (false && i++ ; true || i++). En el codigo provisto en java no pasa, por lo que si no se hiciera el control entero, _no hay problema_.
@@ -116,7 +118,7 @@ Quien deberia responsabilizarse de la gestion de memoria en H? El constructor o 
 #### [X] Pregunta 10
 Casos de prueba relevantes?
 
-#### [ ] Pregunta 11
+#### [X] Pregunta 11
 _"Explique intuitivamente cómo resolvió la traducción del mecanismo de selección múltiple del método procesarLote de clase B. *¿Qué dificultades o consideraciones adicionales existen en caso de que se puedan utilizar tipos más complejos (strings, objetos etc.) para su condición?*"_ 
 Relacion con la cantidad extra de saltos con accesos a memoria? Un centrito.
 
