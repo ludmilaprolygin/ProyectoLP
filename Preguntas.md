@@ -98,7 +98,7 @@ Cuando conviene usar etiquetas, y cuando conviene usar PC+offset?
 #### [X] Pregunta 6
 General de estructura de la traduccion. Hay alguna convencion para adoptar sobre orden de codigo y etiquetas?
 
-#### [ ] Pregunta 7
+#### [X] Pregunta 7
 Sobre el opcional 1... "_Controlar la referencias nulas antes de enviar un mensaje a un objeto_".
 Ver LP8 y resolucion del informe.
 
